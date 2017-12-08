@@ -13,5 +13,22 @@
   </head>
   <body>
     <land-of-oolymer-app></land-of-oolymer-app>
+    <script>
+      window.log = function (...messages) {
+        console.log("[window]", ...messages)
+      }
+
+      window.addEventListener("HTMLImportsLoaded", () => {
+        window.log("html imports loaded.")
+      })
+
+      window.addEventListener("WebComponentsReady", () => {
+        window.log("web components ready.")
+      })
+
+      window.addEventListener("app-ready", () => {
+        window.log("application ready.")
+      })
+    </script>
   </body>
 </html>
