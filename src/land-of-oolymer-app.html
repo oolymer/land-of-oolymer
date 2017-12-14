@@ -17,6 +17,22 @@
       }
     </style>
 
+    <h2>Hello [[name]]!</h2>
+
+    <div>
+      <paper-button raised on-click="_createSession">session create</paper-button>
+      <paper-button raised on-click="_destroySession">session destroy</paper-button>
+    </div>
+
+    <p>session active [[sessionActive]]</p>
+
+    <div>
+      pages:
+      <a href="#">none</a>
+      <a href="#start">start</a>
+      <a href="#login">login</a>
+    </div>
+
     <ctrl-session id="session" active="{{sessionActive}}"></ctrl-session>
 
     <iron-pages id="pages" attr-for-selected="name" selected="[[activePage]]">
@@ -24,20 +40,6 @@
       <page-login name="login"></page-login>
     </iron-pages>
 
-    <h2>Hello [[name]]!</h2>
-
-    <p>session active [[sessionActive]]</p>
-
-    <div>
-      <a href="#">page none</a>
-      <a href="#start">page start</a>
-      <a href="#login">page login</a>
-    </div>
-
-    <div>
-      <paper-button raised on-click="_createSession">session create</paper-button>
-      <paper-button raised on-click="_destroySession">session destroy</paper-button>
-    </div>
   </template>
 
   <script>
@@ -77,33 +79,16 @@
           this._deselectPage(page)
         })
 
-        // window.pages._selectedItemChanged = (value, oldValue) => {
-          // if (value) {
-          //   console.log("...", value.onPageShow)
-          //   value.onPageShow()
-          // }
-          // if (oldValue) {
-          //   console.log("...", oldValue.onPageHide)
-          //   oldValue.onPageHide()
-          // }
-        // }
-        // window.pages._createPropertyObserver("selectedItem", "_selectedItemChanged", true)
-
         this._log("session", window.session.active)
+        this._onLocationHashChange(window.location.hash)
         window.session.addEventListener("active-changed", () => {
           this._log("session", window.session.active)
           this._onLocationHashChange(window.location.hash)
         })
 
         window.addEventListener("hashchange", event => {
-          if (window.session.active) {
-            this._onLocationHashChange(window.location.hash)
-          }
+          this._onLocationHashChange(window.location.hash)
         })
-
-        // window.pages.addEventListener("selected-item-changed", event => {
-        //   this._log("pages", event)
-        // })
 
         const lazyImports = document.querySelectorAll("link[rel=lazy-import]")
         console.log(lazyImports)
@@ -140,17 +125,19 @@
 
       _onLocationHashChange(locationHash) {
         this.activePage = locationHash.substring(1)
-        const pageName = "page-" + this.activePage
-        const pageHref = "./page-" + this.activePage + ".html"
+        if (window.session.active || window.location.hash === "#login") {
+          const pageName = "page-" + this.activePage
+          const pageHref = "./page-" + this.activePage + ".html"
 
-        const page = this.shadowRoot.querySelector(pageName)
+          const page = this.shadowRoot.querySelector(pageName)
 
-        this._log("active page", this.activePage)
-        Polymer.importHref(this.resolveUrl(pageHref), () => {
-          this._log("imported page")
-          this._log("page", page)
-          this._selectPage(page)
-        }, null, true)
+          this._log("active page", this.activePage)
+          Polymer.importHref(this.resolveUrl(pageHref), () => {
+            this._log("imported page")
+            this._log("page", page)
+            this._selectPage(page)
+          }, null, true)
+        }
       }
 
       _log(...messages) {

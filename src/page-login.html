@@ -1,4 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
 
 <dom-module id="page-login">
   <template>
@@ -9,6 +10,11 @@
     </style>
 
     <h2>Hello [[title]]!</h2>
+
+    <!-- <div> -->
+      <!-- <paper-button raised on-click="_createSession">session create</paper-button> -->
+      <!-- <paper-button raised on-click="_destroySession">session destroy</paper-button> -->
+    <!-- </div> -->
   </template>
 
   <script>
@@ -30,6 +36,21 @@
           }
         }
       }
+
+      _createSession() {
+        const session = window.session
+        Polymer.Async.timeOut.after(1000).run(() => {
+          session.active = true
+        })
+      }
+
+      _destroySession() {
+        const session = window.session
+        Polymer.Async.timeOut.after(1000).run(() => {
+          session.active = false
+        })
+      }
+
     }
 
     window.customElements.define(PageLogin.is, PageLogin)

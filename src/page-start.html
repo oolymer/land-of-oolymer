@@ -9,9 +9,11 @@
       }
     </style>
 
+    <ctrl-model id="model" active="{{modelActive}}"></ctrl-model>
+
     <h2>Hello [[title]]!</h2>
 
-    <ctrl-model id="model"></ctrl-model>
+    <p>model active [[modelActive]]</p>
   </template>
 
   <script>
@@ -34,16 +36,24 @@
         }
       }
 
-      onPageSelect() {
-        this._log("select")
+      ready() {
+        super.ready()
+        this._log("ready")
         Polymer.Async.timeOut.after(1000).run(() => {
           this.$.model.active = true
         })
+      }
+
+      onPageSelect() {
+        this._log("select")
         this.$.model.addEventListener("active-changed", event => {
           this._log("model", event.target)
         })
         window.session.addEventListener("active-changed", event => {
           this._log("session", event.target)
+          if (!event.target.active) {
+            this.$.model.active = false
+          }
         })
       }
 
