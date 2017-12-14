@@ -39,8 +39,11 @@
         Polymer.Async.timeOut.after(1000).run(() => {
           this.$.model.active = true
         })
-        this.$.model.addEventListener("on-active-changed", value => {
-          this._log("model", value)
+        this.$.model.addEventListener("active-changed", event => {
+          this._log("model", event.target)
+        })
+        window.session.addEventListener("active-changed", event => {
+          this._log("session", event.target)
         })
       }
 
