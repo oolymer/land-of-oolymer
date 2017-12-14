@@ -1,4 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="./ctrl-model.html">
 
 <dom-module id="page-start">
   <template>
@@ -9,6 +10,8 @@
     </style>
 
     <h2>Hello [[title]]!</h2>
+
+    <ctrl-model id="model"></ctrl-model>
   </template>
 
   <script>
@@ -29,6 +32,24 @@
             reflectToAttribute: true
           }
         }
+      }
+
+      onPageSelect() {
+        this._log("select")
+        Polymer.Async.timeOut.after(1000).run(() => {
+          this.$.model.active = true
+        })
+        this.$.model.addEventListener("on-active-changed", value => {
+          this._log("model", value)
+        })
+      }
+
+      onPageDeselect() {
+        this._log("deselect")
+      }
+
+      _log(...messages) {
+        console.log(`[${this.localName}]`, ...messages)
       }
     }
 

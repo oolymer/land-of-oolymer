@@ -68,6 +68,27 @@
         window.session = this.$.session
         window.pages = this.$.pages
 
+        window.pages.addEventListener("iron-select", event => {
+          const page = event.detail.item
+          this._selectPage(page)
+        })
+        window.pages.addEventListener("iron-deselect", event => {
+          const page = event.detail.item
+          this._deselectPage(page)
+        })
+
+        // window.pages._selectedItemChanged = (value, oldValue) => {
+          // if (value) {
+          //   console.log("...", value.onPageShow)
+          //   value.onPageShow()
+          // }
+          // if (oldValue) {
+          //   console.log("...", oldValue.onPageHide)
+          //   oldValue.onPageHide()
+          // }
+        // }
+        // window.pages._createPropertyObserver("selectedItem", "_selectedItemChanged", true)
+
         this._log("session", window.session.active)
         window.session.addEventListener("active-changed", () => {
           this._log("session", window.session.active)
@@ -79,6 +100,10 @@
             this._onLocationHashChange(window.location.hash)
           }
         })
+
+        // window.pages.addEventListener("selected-item-changed", event => {
+        //   this._log("pages", event)
+        // })
 
         const lazyImports = document.querySelectorAll("link[rel=lazy-import]")
         console.log(lazyImports)
@@ -101,17 +126,31 @@
         })
       }
 
+      _selectPage(page) {
+        if (typeof page.onPageSelect === "function") {
+          page.onPageSelect()
+        }
+      }
+
+      _deselectPage(page) {
+        if (typeof page.onPageDeselect === "function") {
+          page.onPageDeselect()
+        }
+      }
+
       _onLocationHashChange(locationHash) {
         this.activePage = locationHash.substring(1)
-        const pageElementName = "page-" + this.activePage
-        const pageElementHref = "./page-" + this.activePage + ".html"
+        const pageName = "page-" + this.activePage
+        const pageHref = "./page-" + this.activePage + ".html"
+
+        const page = this.shadowRoot.querySelector(pageName)
 
         this._log("active page", this.activePage)
-        Polymer.importHref(this.resolveUrl(pageElementHref), () => {
+        Polymer.importHref(this.resolveUrl(pageHref), () => {
           this._log("imported page")
-          const pageElement = this.shadowRoot.querySelector(pageElementName)
-          this._log("page", pageElement)
-        })
+          this._log("page", page)
+          this._selectPage(page)
+        }, null, true)
       }
 
       _log(...messages) {
