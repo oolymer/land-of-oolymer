@@ -7,6 +7,7 @@
     "build": "./node_modules/.bin/polymer build",
     "build:docs": "./node_modules/.bin/polymer analyze > analysis.json",
     "serve": "./node_modules/.bin/polymer serve --port 3100",
+    "serve:build": "./node_modules/.bin/polymer serve --port 4000 build/default",
     "serve:watch": "./node_modules/.bin/browser-sync start --port 3000 --proxy 'localhost:3100' --no-ui --files '*.html, demo/**/*.html, src/**/*.html, test/**/*.html' --startPath \"/components/$npm_package_name/\"",
     "test": "./node_modules/.bin/polymer test --local chrome,firefox"
   },

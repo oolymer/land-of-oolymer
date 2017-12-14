@@ -4,7 +4,8 @@
   "private": true,
   "dependencies": {
     "polymer": "Polymer/polymer#2.3.1",
-    "oo-routes": "oolymer/oo-routes#0.4.0"
+    "oo-routes": "oolymer/oo-routes#0.4.0",
+    "iron-pages": "PolymerElements/iron-pages#^2.0.1"
   },
   "devDependencies": {
     "web-component-tester": "Polymer/web-component-tester#6.4.1",

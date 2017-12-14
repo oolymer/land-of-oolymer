@@ -8,7 +8,7 @@
       }
     </style>
 
-    <h2>Hello [[name]]!</h2>
+    <h2>Hello [[title]]!</h2>
   </template>
 
   <script>
@@ -23,7 +23,7 @@
 
       static get properties() {
         return {
-          name: {
+          title: {
             type: String,
             value: () => this.is,
             reflectToAttribute: true

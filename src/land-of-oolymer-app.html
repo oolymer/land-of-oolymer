@@ -1,5 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/polymer/lib/utils/import-href.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 
 <link rel="lazy-import" href="./page-start.html">
 <link rel="lazy-import" href="./page-login.html">
@@ -12,8 +13,10 @@
       }
     </style>
 
-    <page-start></page-start>
-    <page-login></page-login>
+    <iron-pages attr-for-selected="name" selected="[[activePage]]">
+      <page-start name="start"></page-start>
+      <page-login name="login"></page-login>
+    </iron-pages>
 
     <h2>Hello [[name]]!</h2>
   </template>
@@ -34,23 +37,34 @@
             type: String,
             value: () => this.is,
             reflectToAttribute: true
-          }
+          },
+
+          activePage: String
         }
+      }
+
+      _onLocationHashChange(locationHash) {
+        this.activePage = locationHash.substring(1)
+        this._log("active page", this.activePage)
+        Polymer.importHref(this.resolveUrl("./page-" + this.activePage + ".html"), () => {
+          this._log("imported page")
+          this._log("page", this.shadowRoot.querySelector("page-" + this.activePage))
+        })
       }
 
       ready() {
         super.ready()
 
+        this._onLocationHashChange(window.location.hash)
+        window.addEventListener("hashchange", event => {
+          this._onLocationHashChange(window.location.hash)
+        })
+
+        const lazyImports = document.querySelectorAll("link[rel=lazy-import]")
+        console.log(lazyImports)
+
         // window.dispatchEvent(new CustomEvent("app-ready"))
         this.dispatchEvent(new CustomEvent("app-ready", { bubbles: true }))
-
-        this._log("page", this.shadowRoot.querySelector("page-start"))
-
-        Polymer.importHref(this.resolveUrl("./page-start.html"), () => {
-          this._log("imported page")
-          this._log("page", this.shadowRoot.querySelector("page-start"))
-        })
-        Polymer.importHref(this.resolveUrl("./page-login.html"))
       }
 
       _log(...messages) {
