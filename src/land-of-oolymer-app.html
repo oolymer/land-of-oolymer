@@ -1,6 +1,10 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/polymer/lib/utils/import-href.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="./ctrl-session.html">
+<link rel="import" href="./ctrl-model.html">
 
 <link rel="lazy-import" href="./page-start.html">
 <link rel="lazy-import" href="./page-login.html">
@@ -13,12 +17,27 @@
       }
     </style>
 
-    <iron-pages attr-for-selected="name" selected="[[activePage]]">
+    <ctrl-session id="session" active="{{sessionActive}}"></ctrl-session>
+
+    <iron-pages id="pages" attr-for-selected="name" selected="[[activePage]]">
       <page-start name="start"></page-start>
       <page-login name="login"></page-login>
     </iron-pages>
 
     <h2>Hello [[name]]!</h2>
+
+    <p>session active [[sessionActive]]</p>
+
+    <div>
+      <a href="#">page none</a>
+      <a href="#start">page start</a>
+      <a href="#login">page login</a>
+    </div>
+
+    <div>
+      <paper-button raised on-click="_createSession">session create</paper-button>
+      <paper-button raised on-click="_destroySession">session destroy</paper-button>
+    </div>
   </template>
 
   <script>
@@ -43,21 +62,22 @@
         }
       }
 
-      _onLocationHashChange(locationHash) {
-        this.activePage = locationHash.substring(1)
-        this._log("active page", this.activePage)
-        Polymer.importHref(this.resolveUrl("./page-" + this.activePage + ".html"), () => {
-          this._log("imported page")
-          this._log("page", this.shadowRoot.querySelector("page-" + this.activePage))
-        })
-      }
-
       ready() {
         super.ready()
 
-        this._onLocationHashChange(window.location.hash)
-        window.addEventListener("hashchange", event => {
+        window.session = this.$.session
+        window.pages = this.$.pages
+
+        this._log("session", window.session.active)
+        window.session.addEventListener("active-changed", () => {
+          this._log("session", window.session.active)
           this._onLocationHashChange(window.location.hash)
+        })
+
+        window.addEventListener("hashchange", event => {
+          if (window.session.active) {
+            this._onLocationHashChange(window.location.hash)
+          }
         })
 
         const lazyImports = document.querySelectorAll("link[rel=lazy-import]")
@@ -65,6 +85,33 @@
 
         // window.dispatchEvent(new CustomEvent("app-ready"))
         this.dispatchEvent(new CustomEvent("app-ready", { bubbles: true }))
+      }
+
+      _createSession() {
+        const session = window.session
+        Polymer.Async.timeOut.after(1000).run(() => {
+          session.active = true
+        })
+      }
+
+      _destroySession() {
+        const session = window.session
+        Polymer.Async.timeOut.after(1000).run(() => {
+          session.active = false
+        })
+      }
+
+      _onLocationHashChange(locationHash) {
+        this.activePage = locationHash.substring(1)
+        const pageElementName = "page-" + this.activePage
+        const pageElementHref = "./page-" + this.activePage + ".html"
+
+        this._log("active page", this.activePage)
+        Polymer.importHref(this.resolveUrl(pageElementHref), () => {
+          this._log("imported page")
+          const pageElement = this.shadowRoot.querySelector(pageElementName)
+          this._log("page", pageElement)
+        })
       }
 
       _log(...messages) {
