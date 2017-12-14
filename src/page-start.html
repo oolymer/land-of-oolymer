@@ -1,0 +1,37 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<dom-module id="page-start">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <h2>Hello [[name]]!</h2>
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class PageStart extends Polymer.Element {
+      static get is() {
+        return "page-start"
+      }
+
+      static get properties() {
+        return {
+          name: {
+            type: String,
+            value: () => this.is,
+            reflectToAttribute: true
+          }
+        }
+      }
+    }
+
+    window.customElements.define(PageStart.is, PageStart)
+  </script>
+</dom-module>

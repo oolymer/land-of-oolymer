@@ -1,4 +1,10 @@
 {
+  "entrypoint": "index.html",
+  "shell": "src/land-of-oolymer-app.html",
+  "fragments": [
+    "src/page-start.html",
+    "src/page-login.html"
+  ],
   "lint": {
     "rules": [
       "polymer-2"

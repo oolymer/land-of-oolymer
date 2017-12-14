@@ -1,4 +1,8 @@
-<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/lib/utils/import-href.html">
+
+<link rel="lazy-import" href="./page-start.html">
+<link rel="lazy-import" href="./page-login.html">
 
 <dom-module id="land-of-oolymer-app">
   <template>
@@ -7,6 +11,9 @@
         display: block;
       }
     </style>
+
+    <page-start></page-start>
+    <page-login></page-login>
 
     <h2>Hello [[name]]!</h2>
   </template>
@@ -33,9 +40,23 @@
 
       ready() {
         super.ready()
+
         // window.dispatchEvent(new CustomEvent("app-ready"))
         this.dispatchEvent(new CustomEvent("app-ready", { bubbles: true }))
+
+        this._log("page", this.shadowRoot.querySelector("page-start"))
+
+        Polymer.importHref(this.resolveUrl("./page-start.html"), () => {
+          this._log("imported page")
+          this._log("page", this.shadowRoot.querySelector("page-start"))
+        })
+        Polymer.importHref(this.resolveUrl("./page-login.html"))
       }
+
+      _log(...messages) {
+        console.log(`[${this.localName}]`, ...messages)
+      }
+
     }
 
     window.customElements.define(LandOfOolymerApp.is, LandOfOolymerApp)
