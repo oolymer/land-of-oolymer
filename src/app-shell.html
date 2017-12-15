@@ -5,11 +5,10 @@
 
 <link rel="import" href="./ctrl-session.html">
 <link rel="import" href="./ctrl-model.html">
-
 <link rel="lazy-import" href="./page-start.html">
 <link rel="lazy-import" href="./page-login.html">
 
-<dom-module id="land-of-oolymer-app">
+<dom-module id="app-shell">
   <template>
     <style>
       :host {
@@ -24,7 +23,8 @@
       <paper-button raised on-click="_destroySession">session destroy</paper-button>
     </div>
 
-    <p>session active [[sessionActive]]</p>
+    <p>active page [[activePage]]</p>
+    <p>is session active [[sessionActive]]</p>
 
     <div>
       pages:
@@ -47,9 +47,9 @@
      * @customElement
      * @polymer
      */
-    class LandOfOolymerApp extends Polymer.Element {
+    class AppShell extends Polymer.Element {
       static get is() {
-        return "land-of-oolymer-app"
+        return "app-shell"
       }
 
       static get properties() {
@@ -72,11 +72,11 @@
 
         window.pages.addEventListener("iron-select", event => {
           const page = event.detail.item
-          this._selectPage(page)
+          this._activatePage(page)
         })
         window.pages.addEventListener("iron-deselect", event => {
           const page = event.detail.item
-          this._deselectPage(page)
+          this._deactivatePage(page)
         })
 
         this._log("session", window.session.active)
@@ -111,15 +111,15 @@
         })
       }
 
-      _selectPage(page) {
-        if (typeof page.onPageSelect === "function") {
-          page.onPageSelect()
+      _activatePage(page) {
+        if (typeof page.onActivated === "function") {
+          page.onActivated()
         }
       }
 
-      _deselectPage(page) {
-        if (typeof page.onPageDeselect === "function") {
-          page.onPageDeselect()
+      _deactivatePage(page) {
+        if (typeof page.onDeactivated === "function") {
+          page.onDeactivated()
         }
       }
 
@@ -131,11 +131,12 @@
 
           const page = this.shadowRoot.querySelector(pageName)
 
-          this._log("active page", this.activePage)
+          this._log("page name", this.activePage)
+          this._log("page", page)
           Polymer.importHref(this.resolveUrl(pageHref), () => {
-            this._log("imported page")
+            this._log("page imported", pageHref)
             this._log("page", page)
-            this._selectPage(page)
+            this._activatePage(page)
           }, null, true)
         }
       }
@@ -143,9 +144,8 @@
       _log(...messages) {
         console.log(`[${this.localName}]`, ...messages)
       }
-
     }
 
-    window.customElements.define(LandOfOolymerApp.is, LandOfOolymerApp)
+    window.customElements.define(AppShell.is, AppShell)
   </script>
 </dom-module>

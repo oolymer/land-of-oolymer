@@ -13,7 +13,7 @@
 
     <h2>Hello [[title]]!</h2>
 
-    <p>model active [[modelActive]]</p>
+    <p>is model active [[modelActive]]</p>
   </template>
 
   <script>
@@ -65,12 +65,12 @@
         this.$.model.active = false
       }
 
-      onPageSelect() {
-        this._log("select")
+      onActivated() {
+        this._log("activated")
       }
 
-      onPageDeselect() {
-        this._log("deselect")
+      onDeactivated() {
+        this._log("deactivated")
       }
 
       _log(...messages) {
