@@ -9,7 +9,7 @@
       }
     </style>
 
-    <ctrl-model id="model" active="{{modelActive}}"></ctrl-model>
+    <ctrl-model id="pageModel" active="{{modelActive}}"></ctrl-model>
 
     <h2>Hello [[title]]!</h2>
 
@@ -41,10 +41,7 @@
         this._log("ready")
 
         this._createModel()
-        this.$.model.addEventListener("active-changed", event => {
-          this._log("model", event.target)
-        })
-        window.session.addEventListener("active-changed", event => {
+        window.appSession.addEventListener("active-changed", event => {
           this._log("session", event.target)
           if (event.target.active) {
             this._createModel()
@@ -53,16 +50,19 @@
             this._destroyModel()
           }
         })
+        this.$.pageModel.addEventListener("active-changed", event => {
+          this._log("model", event.target)
+        })
       }
 
       _createModel() {
         Polymer.Async.timeOut.after(1000).run(() => {
-          this.$.model.active = true
+          this.$.pageModel.active = true
         })
       }
 
       _destroyModel() {
-        this.$.model.active = false
+        this.$.pageModel.active = false
       }
 
       onActivated() {
