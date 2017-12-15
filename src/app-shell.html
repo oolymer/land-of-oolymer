@@ -1,0 +1,151 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/lib/utils/import-href.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="./ctrl-session.html">
+<link rel="import" href="./ctrl-model.html">
+<link rel="lazy-import" href="./page-start.html">
+<link rel="lazy-import" href="./page-login.html">
+
+<dom-module id="app-shell">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <h2>Hello [[name]]!</h2>
+
+    <div>
+      <paper-button raised on-click="_createSession">session create</paper-button>
+      <paper-button raised on-click="_destroySession">session destroy</paper-button>
+    </div>
+
+    <p>active page [[activePage]]</p>
+    <p>is session active [[sessionActive]]</p>
+
+    <div>
+      pages:
+      <a href="#">none</a>
+      <a href="#start">start</a>
+      <a href="#login">login</a>
+    </div>
+
+    <ctrl-session id="session" active="{{sessionActive}}"></ctrl-session>
+
+    <iron-pages id="pages" attr-for-selected="name" selected="[[activePage]]">
+      <page-start name="start"></page-start>
+      <page-login name="login"></page-login>
+    </iron-pages>
+
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class AppShell extends Polymer.Element {
+      static get is() {
+        return "app-shell"
+      }
+
+      static get properties() {
+        return {
+          name: {
+            type: String,
+            value: () => this.is,
+            reflectToAttribute: true
+          },
+
+          activePage: String
+        }
+      }
+
+      ready() {
+        super.ready()
+
+        window.appSession = this.$.session
+        window.appPages = this.$.pages
+
+        window.appPages.addEventListener("iron-select", event => {
+          const page = event.detail.item
+          this._activatePage(page)
+        })
+        window.appPages.addEventListener("iron-deselect", event => {
+          const page = event.detail.item
+          this._deactivatePage(page)
+        })
+
+        this._log("session", window.appSession.active)
+        this._onLocationHashChange(window.location.hash)
+        window.appSession.addEventListener("active-changed", () => {
+          this._log("session", window.appSession.active)
+          this._onLocationHashChange(window.location.hash)
+        })
+
+        window.addEventListener("hashchange", event => {
+          this._onLocationHashChange(window.location.hash)
+        })
+
+        const lazyImports = document.querySelectorAll("link[rel=lazy-import]")
+        console.log(lazyImports)
+
+        // window.dispatchEvent(new CustomEvent("app-ready"))
+        this.dispatchEvent(new CustomEvent("app-ready", { bubbles: true }))
+      }
+
+      _createSession() {
+        const session = window.appSession
+        Polymer.Async.timeOut.after(1000).run(() => {
+          session.active = true
+        })
+      }
+
+      _destroySession() {
+        const session = window.appSession
+        Polymer.Async.timeOut.after(1000).run(() => {
+          session.active = false
+        })
+      }
+
+      _activatePage(page) {
+        if (typeof page.onActivated === "function") {
+          page.onActivated()
+        }
+      }
+
+      _deactivatePage(page) {
+        if (typeof page.onDeactivated === "function") {
+          page.onDeactivated()
+        }
+      }
+
+      _onLocationHashChange(locationHash) {
+        this.activePage = locationHash.substring(1)
+        if (window.appSession.active || window.location.hash === "#login") {
+          const pageName = "page-" + this.activePage
+          const pageHref = "./page-" + this.activePage + ".html"
+
+          const page = this.shadowRoot.querySelector(pageName)
+
+          this._log("page name", this.activePage)
+          this._log("page", page)
+          Polymer.importHref(this.resolveUrl(pageHref), () => {
+            this._log("page imported", pageHref)
+            this._log("page", page)
+            this._activatePage(page)
+          }, null, true)
+        }
+      }
+
+      _log(...messages) {
+        console.log(`[${this.localName}]`, ...messages)
+      }
+    }
+
+    window.customElements.define(AppShell.is, AppShell)
+  </script>
+</dom-module>

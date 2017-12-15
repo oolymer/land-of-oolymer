@@ -1,18 +1,18 @@
 # \<land-of-oolymer\>
 
-Viewing Your Application.
+Viewing your application.
 
 ```
 $ polymer serve
 ```
 
-Building Your Application.
+Building your application.
 
 ```
 $ polymer build
 ```
 
-Running Tests.
+Running tests.
 
 ```
 $ polymer test

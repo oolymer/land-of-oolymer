@@ -2,15 +2,19 @@
   "name": "land-of-oolymer",
   "private": true,
   "scripts": {
-    "browser": "npm run serve & npm run watch",
+    "browser": "./node_modules/.bin/npm-run-all --parallel serve browser:after",
+    "browser:after": "./node_modules/.bin/npm-run-all --serial serve:watch",
     "build": "./node_modules/.bin/polymer build",
-    "serve": "./node_modules/.bin/polymer serve --port 9090",
-    "test": "./node_modules/.bin/polymer test --local chrome,firefox",
-    "watch": "./node_modules/.bin/browser-sync start --port 3000 --proxy 'localhost:9090' --no-ui --files '*.html, demo/**/*.html, src/**/*.html, test/**/*.html' --startPath \"/components/$npm_package_name/\""
+    "build:docs": "./node_modules/.bin/polymer analyze > analysis.json",
+    "serve": "./node_modules/.bin/polymer serve --port 3100",
+    "serve:build": "./node_modules/.bin/polymer serve --port 4000 build/default",
+    "serve:watch": "./node_modules/.bin/browser-sync start --port 3000 --proxy 'localhost:3100' --no-ui --files '*.html, demo/**/*.html, src/**/*.html, test/**/*.html' --startPath \"/components/$npm_package_name/\"",
+    "test": "./node_modules/.bin/polymer test --local chrome,firefox"
   },
   "devDependencies": {
     "bower": "1.8.2",
     "browser-sync": "2.18.13",
+    "npm-run-all": "4.1.2",
     "polymer-cli": "1.5.7",
     "web-component-tester": "6.4.1"
   }

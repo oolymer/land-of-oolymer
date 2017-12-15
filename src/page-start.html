@@ -1,0 +1,83 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="./ctrl-model.html">
+
+<dom-module id="page-start">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <ctrl-model id="pageModel" active="{{modelActive}}"></ctrl-model>
+
+    <h2>Hello [[title]]!</h2>
+
+    <p>is model active [[modelActive]]</p>
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class PageStart extends Polymer.Element {
+      static get is() {
+        return "page-start"
+      }
+
+      static get properties() {
+        return {
+          title: {
+            type: String,
+            value: () => this.is,
+            reflectToAttribute: true
+          }
+        }
+      }
+
+      ready() {
+        super.ready()
+        this._log("ready")
+
+        this._createModel()
+        window.appSession.addEventListener("active-changed", event => {
+          this._log("session", event.target)
+          if (event.target.active) {
+            this._createModel()
+          }
+          else {
+            this._destroyModel()
+          }
+        })
+        this.$.pageModel.addEventListener("active-changed", event => {
+          this._log("model", event.target)
+        })
+      }
+
+      _createModel() {
+        Polymer.Async.timeOut.after(1000).run(() => {
+          this.$.pageModel.active = true
+        })
+      }
+
+      _destroyModel() {
+        this.$.pageModel.active = false
+      }
+
+      onActivated() {
+        this._log("activated")
+      }
+
+      onDeactivated() {
+        this._log("deactivated")
+      }
+
+      _log(...messages) {
+        console.log(`[${this.localName}]`, ...messages)
+      }
+    }
+
+    window.customElements.define(PageStart.is, PageStart)
+  </script>
+</dom-module>

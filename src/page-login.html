@@ -1,0 +1,58 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<dom-module id="page-login">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <h2>Hello [[title]]!</h2>
+
+    <!-- <div> -->
+      <!-- <paper-button raised on-click="_createSession">session create</paper-button> -->
+      <!-- <paper-button raised on-click="_destroySession">session destroy</paper-button> -->
+    <!-- </div> -->
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class PageLogin extends Polymer.Element {
+      static get is() {
+        return "page-login"
+      }
+
+      static get properties() {
+        return {
+          title: {
+            type: String,
+            value: () => this.is,
+            reflectToAttribute: true
+          }
+        }
+      }
+
+      _createSession() {
+        const session = window.session
+        Polymer.Async.timeOut.after(1000).run(() => {
+          session.active = true
+        })
+      }
+
+      _destroySession() {
+        const session = window.session
+        Polymer.Async.timeOut.after(1000).run(() => {
+          session.active = false
+        })
+      }
+
+    }
+
+    window.customElements.define(PageLogin.is, PageLogin)
+  </script>
+</dom-module>

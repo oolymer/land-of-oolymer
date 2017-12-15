@@ -4,37 +4,37 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-    <title>land-of-oolymer-app test</title>
+    <title>app-shell test</title>
 
-    <script src="../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="../../bower_components/web-component-tester/browser.js"></script>
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../bower_components/web-component-tester/browser.js"></script>
 
-    <link rel="import" href="../../src/land-of-oolymer-app/land-of-oolymer-app.html">
+    <link rel="import" href="../src/app-shell.html">
   </head>
   <body>
 
     <test-fixture id="BasicTestFixture">
       <template>
-        <land-of-oolymer-app></land-of-oolymer-app>
+        <app-shell></app-shell>
       </template>
     </test-fixture>
 
     <test-fixture id="ChangedPropertyTestFixture">
       <template>
-        <land-of-oolymer-app name="fixture"></land-of-oolymer-app>
+        <app-shell name="fixture"></app-shell>
       </template>
     </test-fixture>
 
     <script>
-      suite("land-of-oolymer-app", function() {
+      suite("app-shell", function() {
 
         test("instantiate the element with default properties", function() {
           const element = fixture("BasicTestFixture")
-          expect(element.name).to.equal("land-of-oolymer-app")
+          expect(element.name).to.equal("app-shell")
 
           const elementShadowRoot = element.shadowRoot
           const elementHeader = elementShadowRoot.querySelector("h2")
-          expect(elementHeader.innerHTML).to.equal("Hello land-of-oolymer-app!")
+          expect(elementHeader.innerHTML).to.equal("Hello app-shell!")
         })
 
         test("set a property on the element", function() {

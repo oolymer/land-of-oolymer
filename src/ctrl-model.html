@@ -1,0 +1,28 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<dom-module id="ctrl-model">
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class CtrlModel extends Polymer.Element {
+      static get is() {
+        return "ctrl-model"
+      }
+
+      static get properties() {
+        return {
+          active: {
+            type: Boolean,
+            value: () => false,
+            notify: true,
+            reflectToAttribute: true
+          }
+        }
+      }
+    }
+
+    window.customElements.define(CtrlModel.is, CtrlModel)
+  </script>
+</dom-module>

@@ -1,0 +1,28 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<dom-module id="ctrl-session">
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class CtrlSession extends Polymer.Element {
+      static get is() {
+        return "ctrl-session"
+      }
+
+      static get properties() {
+        return {
+          active: {
+            type: Boolean,
+            value: () => false,
+            notify: true,
+            reflectToAttribute: true
+          }
+        }
+      }
+    }
+
+    window.customElements.define(CtrlSession.is, CtrlSession)
+  </script>
+</dom-module>
