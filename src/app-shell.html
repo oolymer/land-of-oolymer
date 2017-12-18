@@ -16,7 +16,7 @@
       }
     </style>
 
-    <h2>Hello [[name]]!</h2>
+    <h2>Hello [[title]]!</h2>
 
     <div>
       <paper-button raised on-click="_createSession">session create</paper-button>
@@ -54,7 +54,7 @@
 
       static get properties() {
         return {
-          name: {
+          title: {
             type: String,
             value: () => this.is,
             reflectToAttribute: true
@@ -91,7 +91,7 @@
         })
 
         const lazyImports = document.querySelectorAll("link[rel=lazy-import]")
-        console.log(lazyImports)
+        this._log("lazy imports", lazyImports.map(it => it.href))
 
         // window.dispatchEvent(new CustomEvent("app-ready"))
         this.dispatchEvent(new CustomEvent("app-ready", { bubbles: true }))
@@ -130,14 +130,15 @@
           const pageHref = "./page-" + this.activePage + ".html"
 
           const page = this.shadowRoot.querySelector(pageName)
-
-          this._log("page name", this.activePage)
-          this._log("page", page)
-          Polymer.importHref(this.resolveUrl(pageHref), () => {
-            this._log("page imported", pageHref)
-            this._log("page", page)
+          if (page && !page.ready) {
+            Polymer.importHref(this.resolveUrl(pageHref), () => {
+              this._log("page", pageHref, page)
+              this._activatePage(page)
+            }, null, true)
+          }
+          else if (page) {
             this._activatePage(page)
-          }, null, true)
+          }
         }
       }
 
