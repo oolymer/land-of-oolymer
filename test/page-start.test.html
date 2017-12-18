@@ -1,29 +1,29 @@
 <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
 <script src="../bower_components/web-component-tester/browser.js"></script>
 
-<link rel="import" href="../src/app-shell.html">
+<link rel="import" href="../src/page-start.html">
 
 <test-fixture id="BasicTestFixture">
   <template>
-    <app-shell></app-shell>
+    <page-start></page-start>
   </template>
 </test-fixture>
 
 <test-fixture id="ChangedPropertyTestFixture">
   <template>
-    <app-shell title="fixture"></app-shell>
+    <page-start title="fixture"></page-start>
   </template>
 </test-fixture>
 
 <script>
-  suite("app-shell", () => {
+  suite("page-start", () => {
 
     test("instantiate the element with default properties", () => {
       const element = fixture("BasicTestFixture")
-      expect(element.title).to.equal("app-shell")
+      expect(element.title).to.equal("page-start")
 
       const elementHeader = element.shadowRoot.querySelector("h2")
-      expect(elementHeader.innerHTML).to.equal("Hello app-shell!")
+      expect(elementHeader.innerHTML).to.equal("Hello page-start!")
     })
 
     test("set a property on the element", () => {
