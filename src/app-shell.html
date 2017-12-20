@@ -35,7 +35,7 @@
 
     <ctrl-session id="session" active="{{sessionActive}}"></ctrl-session>
 
-    <ctrl-router id="router" page-name="{{pageName}}"></ctrl-session>
+    <ctrl-router id="router" name="{{pageName}}"></ctrl-session>
 
     <iron-pages id="pages" attr-for-selected="name">
       <page-start name="start"></page-start>
@@ -115,17 +115,17 @@
       }
 
       _listenToPageChanges() {
-        this.addEventListener("page-name-changed", () => {
-          this._onPageNameChange(this.pageName)
+        this.$.router.addEventListener("name-changed", () => {
+          this._onPageNameChange(this.$.router.name)
         })
 
         this.$.session.addEventListener("active-changed", () => {
           this._log("session", this.$.session.active)
-          this._onPageNameChange(this.pageName)
+          this._onPageNameChange(this.$.router.name)
         })
 
         this._log("session", this.$.session.active)
-        this._onPageNameChange(this.pageName)
+        this._onPageNameChange(this.$.router.name)
       }
 
       _listenToPageSelectionChanges() {
@@ -146,7 +146,7 @@
       }
 
       _onLocationHashChange(locationHash) {
-        this.pageName = locationHash.substring(1)
+        this.$.router.name = locationHash.substring(1)
       }
 
       _onPageNameChange(pageName) {
