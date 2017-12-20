@@ -72,17 +72,18 @@
       ready() {
         super.ready()
 
-        window.appSession = this.$.session
-        window.appRouter = this.$.router
-        window.appPages = this.$.pages
-
+        this._registerWindowGlobals()
         this._listenToLocationHashChanges()
         this._listenToPageChanges()
         this._listenToPageSelectionChanges()
         this._fireAppReadyEvent()
+        // this._listLazyImports()
+      }
 
-        const lazyImports = document.querySelectorAll("link[rel=lazy-import]")
-        this._log("lazy imports", lazyImports.map(it => it.href))
+      _registerWindowGlobals() {
+        window.appSession = this.$.session
+        window.appRouter = this.$.router
+        window.appPages = this.$.pages
       }
 
       _listenToLocationHashChanges() {
@@ -95,49 +96,54 @@
 
       _listenToPageChanges() {
         this.addEventListener("page-name-changed", () => {
-          this._onPageNameChange()
+          this._onPageNameChange(this.pageName)
         })
 
-        window.appSession.addEventListener("active-changed", () => {
-          this._log("session", window.appSession.active)
-          this._onPageNameChange()
+        this.$.session.addEventListener("active-changed", () => {
+          this._log("session", this.$.session.active)
+          this._onPageNameChange(this.pageName)
         })
 
-        this._log("session", window.appSession.active)
-        this._onPageNameChange()
+        this._log("session", this.$.session.active)
+        this._onPageNameChange(this.pageName)
       }
 
       _listenToPageSelectionChanges() {
-        window.appPages.addEventListener("iron-select", event => {
+        this.$.pages.addEventListener("iron-select", event => {
           const page = event.detail.item
           this._activatePage(page)
         })
 
-        window.appPages.addEventListener("iron-deselect", event => {
+        this.$.pages.addEventListener("iron-deselect", event => {
           const page = event.detail.item
           this._deactivatePage(page)
         })
       }
 
+      _listLazyImports() {
+        const lazyImports = document.querySelectorAll("link[rel=lazy-import]")
+        this._log("lazy imports", lazyImports.map(it => it.href))
+      }
+
       _fireAppReadyEvent() {
-        // window.dispatchEvent(new CustomEvent("app-ready"))
         this.dispatchEvent(new CustomEvent("app-ready", { bubbles: true }))
+        // window.dispatchEvent(new CustomEvent("app-ready"))
       }
 
       _onLocationHashChange(locationHash) {
         this.pageName = locationHash.substring(1)
       }
 
-      _onPageNameChange() {
-        if (window.appSession.active || this.pageName === "login") {
-          const pageName = "page-" + this.pageName
-          const pageHref = "./page-" + this.pageName + ".html"
-          const page = this.shadowRoot.querySelector(pageName)
+      _onPageNameChange(pageName) {
+        if (this.$.session.active || pageName === "login") {
+          const elementName = "page-" + pageName
+          const elementHref = "./page-" + pageName + ".html"
+          const page = this.shadowRoot.querySelector(elementName)
 
           if (page) {
             if (!page.ready) {
-              this._importPageElement(pageHref, () => {
-                this._log("page", pageHref, page)
+              this._importPageElement(elementHref, () => {
+                this._log("import", elementHref, page)
                 this._activatePage(page)
               })
             }
@@ -153,16 +159,16 @@
       }
 
       _createSession() {
-        const session = window.appSession
-        Polymer.Async.timeOut.after(1000).run(() => {
-          session.active = true
+        const delayMillis = 1000
+        Polymer.Async.timeOut.after(delayMillis).run(() => {
+          this.$.session.active = true
         })
       }
 
       _destroySession() {
-        const session = window.appSession
-        Polymer.Async.timeOut.after(1000).run(() => {
-          session.active = false
+        const delayMillis = 1000
+        Polymer.Async.timeOut.after(delayMillis).run(() => {
+          this.$.session.active = false
         })
       }
 
