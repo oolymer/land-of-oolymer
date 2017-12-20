@@ -23,8 +23,8 @@
       <paper-button raised on-click="_destroySession">session destroy</paper-button>
     </div>
 
-    <p>active page [[pageName]]</p>
-    <p>is session active [[sessionActive]]</p>
+    <p>active page: [[pageName]]</p>
+    <p>is session active: [[sessionActive]]</p>
 
     <div>
       pages:
@@ -41,7 +41,6 @@
       <page-start name="start"></page-start>
       <page-login name="login"></page-login>
     </iron-pages>
-
   </template>
 
   <script>
@@ -77,7 +76,7 @@
         this._listenToPageChanges()
         this._listenToPageSelectionChanges()
         this._fireAppReadyEvent()
-        // this._listLazyImports()
+        // this._findLazyImportsInDocument()
       }
 
       _registerWindowGlobals() {
@@ -120,7 +119,7 @@
         })
       }
 
-      _listLazyImports() {
+      _findLazyImportsInDocument() {
         const lazyImports = document.querySelectorAll("link[rel=lazy-import]")
         this._log("lazy imports", lazyImports.map(it => it.href))
       }

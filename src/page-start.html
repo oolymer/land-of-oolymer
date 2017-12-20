@@ -13,7 +13,7 @@
 
     <h2>Hello [[title]]!</h2>
 
-    <p>is model active [[modelActive]]</p>
+    <p>is model active: [[modelActive]]</p>
   </template>
 
   <script>
@@ -40,31 +40,11 @@
         super.ready()
         this._log("ready")
 
-        this._createModel()
+        this._listenToModelActiveChanges(this.$.model)
         if (window.appSession) {
-          window.appSession.addEventListener("active-changed", event => {
-            this._log("session", event.target)
-            if (event.target.active) {
-              this._createModel()
-            }
-            else {
-              this._destroyModel()
-            }
-          })
+          this._listenToSessionActiveChanges(window.appSession)
+          this._createModel()
         }
-        this.$.model.addEventListener("active-changed", event => {
-          this._log("model", event.target)
-        })
-      }
-
-      _createModel() {
-        Polymer.Async.timeOut.after(1000).run(() => {
-          this.$.model.active = true
-        })
-      }
-
-      _destroyModel() {
-        this.$.model.active = false
       }
 
       onActivated() {
@@ -73,6 +53,35 @@
 
       onDeactivated() {
         this._log("deactivated")
+      }
+
+      _listenToModelActiveChanges(model) {
+        model.addEventListener("active-changed", event => {
+          this._log("model", event.target)
+        })
+      }
+
+      _listenToSessionActiveChanges(session) {
+        session.addEventListener("active-changed", event => {
+          this._log("session", event.target)
+          if (event.target.active) {
+            this._createModel()
+          }
+          else {
+            this._destroyModel()
+          }
+        })
+      }
+
+      _createModel() {
+        const delayMillis = 1000
+        Polymer.Async.timeOut.after(delayMillis).run(() => {
+          this.$.model.active = true
+        })
+      }
+
+      _destroyModel() {
+        this.$.model.active = false
       }
 
       _log(...messages) {
