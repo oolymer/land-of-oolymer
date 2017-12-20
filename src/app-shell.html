@@ -145,7 +145,8 @@
       }
 
       _onPageNameChange(pageName) {
-        if (this.$.session.active || pageName === "login") {
+        const pagesWithoutSession = ["login"]
+        if (this.$.session.active || pagesWithoutSession.includes(pageName)) {
           // const page = this.$.pages._valueToItem(pageName)
           const page = this.$.pages.querySelector("[name=" + pageName + "]")
           const pageImport = (this._imports[pageName] || [])[0]
