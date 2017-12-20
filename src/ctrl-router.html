@@ -1,0 +1,28 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<dom-module id="ctrl-router">
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class CtrlRouter extends Polymer.Element {
+      static get is() {
+        return "ctrl-router"
+      }
+
+      static get properties() {
+        return {
+          pageName: {
+            type: String,
+            value: () => null,
+            notify: true,
+            reflectToAttribute: true
+          }
+        }
+      }
+    }
+
+    window.customElements.define(CtrlRouter.is, CtrlRouter)
+  </script>
+</dom-module>

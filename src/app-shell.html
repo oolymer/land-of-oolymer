@@ -4,6 +4,7 @@
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 
 <link rel="import" href="./ctrl-session.html">
+<link rel="import" href="./ctrl-router.html">
 <link rel="lazy-import" href="./page-start.html">
 <link rel="lazy-import" href="./page-login.html">
 
@@ -22,7 +23,7 @@
       <paper-button raised on-click="_destroySession">session destroy</paper-button>
     </div>
 
-    <p>active page [[activePage]]</p>
+    <p>active page [[pageName]]</p>
     <p>is session active [[sessionActive]]</p>
 
     <div>
@@ -34,7 +35,9 @@
 
     <ctrl-session id="session" active="{{sessionActive}}"></ctrl-session>
 
-    <iron-pages id="pages" attr-for-selected="name" selected="[[activePage]]">
+    <ctrl-router id="router" page-name="{{pageName}}"></ctrl-session>
+
+    <iron-pages id="pages" attr-for-selected="name" selected="[[pageName]]">
       <page-start name="start"></page-start>
       <page-login name="login"></page-login>
     </iron-pages>
@@ -59,7 +62,7 @@
             reflectToAttribute: true
           },
 
-          activePage: String
+          pageName: String
         }
       }
 
@@ -67,31 +70,44 @@
         super.ready()
 
         window.appSession = this.$.session
+        window.appRouter = this.$.router
         window.appPages = this.$.pages
 
-        window.appPages.addEventListener("iron-select", event => {
-          const page = event.detail.item
-          this._activatePage(page)
-        })
-        window.appPages.addEventListener("iron-deselect", event => {
-          const page = event.detail.item
-          this._deactivatePage(page)
+        this._listenToLocationHashChanges()
+        this._listenToPageSelectionChanges()
+        this._fireAppReadyEvent()
+
+        const lazyImports = document.querySelectorAll("link[rel=lazy-import]")
+        this._log("lazy imports", lazyImports.map(it => it.href))
+      }
+
+      _listenToLocationHashChanges() {
+        window.addEventListener("hashchange", event => {
+          this._onLocationHashChange(window.location.hash)
         })
 
-        this._log("session", window.appSession.active)
-        this._onLocationHashChange(window.location.hash)
         window.appSession.addEventListener("active-changed", () => {
           this._log("session", window.appSession.active)
           this._onLocationHashChange(window.location.hash)
         })
 
-        window.addEventListener("hashchange", event => {
-          this._onLocationHashChange(window.location.hash)
+        this._log("session", window.appSession.active)
+        this._onLocationHashChange(window.location.hash)
+      }
+
+      _listenToPageSelectionChanges() {
+        window.appPages.addEventListener("iron-select", event => {
+          const page = event.detail.item
+          this._activatePage(page)
         })
 
-        const lazyImports = document.querySelectorAll("link[rel=lazy-import]")
-        this._log("lazy imports", lazyImports.map(it => it.href))
+        window.appPages.addEventListener("iron-deselect", event => {
+          const page = event.detail.item
+          this._deactivatePage(page)
+        })
+      }
 
+      _fireAppReadyEvent() {
         // window.dispatchEvent(new CustomEvent("app-ready"))
         this.dispatchEvent(new CustomEvent("app-ready", { bubbles: true }))
       }
@@ -123,10 +139,11 @@
       }
 
       _onLocationHashChange(locationHash) {
-        this.activePage = locationHash.substring(1)
+        this.pageName = locationHash.substring(1)
+
         if (window.appSession.active || window.location.hash === "#login") {
-          const pageName = "page-" + this.activePage
-          const pageHref = "./page-" + this.activePage + ".html"
+          const pageName = "page-" + this.pageName
+          const pageHref = "./page-" + this.pageName + ".html"
 
           const page = this.shadowRoot.querySelector(pageName)
           if (page && !page.ready) {
