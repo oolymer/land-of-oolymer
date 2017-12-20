@@ -47,12 +47,12 @@
         }
       }
 
-      onActivated() {
-        this._log("activated")
+      onActivated(params) {
+        this._log("activated", params)
       }
 
-      onDeactivated() {
-        this._log("deactivated")
+      onDeactivated(params) {
+        this._log("deactivated", params)
       }
 
       _listenToModelActiveChanges(model) {

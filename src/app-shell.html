@@ -64,7 +64,12 @@
           pageName: {
             type: String,
             notify: true
-          }
+          },
+
+          pageParams: {
+            type: Object,
+            notify: true
+          },
         }
       }
 
@@ -150,6 +155,7 @@
           // const page = this.$.pages._valueToItem(pageName)
           const page = this.$.pages.querySelector("[name=" + pageName + "]")
           const pageImport = (this._imports[pageName] || [])[0]
+          this.pageParams = { name: pageName }
 
           if (page) {
             if (!page.ready && pageImport) {
@@ -185,13 +191,13 @@
 
       _activatePage(page) {
         if (typeof page.onActivated === "function") {
-          page.onActivated()
+          page.onActivated(this.pageParams)
         }
       }
 
       _deactivatePage(page) {
         if (typeof page.onDeactivated === "function") {
-          page.onDeactivated()
+          page.onDeactivated(this.pageParams)
         }
       }
 
