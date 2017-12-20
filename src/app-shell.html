@@ -37,7 +37,7 @@
 
     <ctrl-router id="router" page-name="{{pageName}}"></ctrl-session>
 
-    <iron-pages id="pages" attr-for-selected="name" selected="[[pageName]]">
+    <iron-pages id="pages" attr-for-selected="name">
       <page-start name="start"></page-start>
       <page-login name="login"></page-login>
     </iron-pages>
@@ -153,7 +153,7 @@
         const pagesWithoutSession = ["login"]
         if (this.$.session.active || pagesWithoutSession.includes(pageName)) {
           // const page = this.$.pages._valueToItem(pageName)
-          const page = this.$.pages.querySelector("[name=" + pageName + "]")
+          const page = this.$.pages.querySelector("[name='" + pageName + "']")
           const pageImport = (this._imports[pageName] || [])[0]
           this.pageParams = { name: pageName }
 
@@ -161,11 +161,11 @@
             if (!page.ready && pageImport) {
               this._importElement(pageImport, () => {
                 this._log("import", pageImport, page)
-                this._activatePage(page)
+                this.$.pages.select(pageName)
               })
             }
             else {
-              this._activatePage(page)
+              this.$.pages.select(pageName)
             }
           }
         }
@@ -197,7 +197,7 @@
 
       _deactivatePage(page) {
         if (typeof page.onDeactivated === "function") {
-          page.onDeactivated(this.pageParams)
+          page.onDeactivated()
         }
       }
 
