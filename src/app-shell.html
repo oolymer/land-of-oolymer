@@ -5,8 +5,8 @@
 
 <link rel="import" href="./ctrl-session.html">
 <link rel="import" href="./ctrl-router.html">
-<link rel="lazy-import" href="./page-start.html">
-<link rel="lazy-import" href="./page-login.html">
+<link rel="lazy-import" group="start" href="./page-start.html">
+<link rel="lazy-import" group="login" href="./page-login.html">
 
 <dom-module id="app-shell">
   <template>
@@ -72,17 +72,33 @@
         super.ready()
 
         this._registerWindowGlobals()
+        this._collectLazyImportsInDocument()
+
         this._listenToLocationHashChanges()
         this._listenToPageChanges()
         this._listenToPageSelectionChanges()
         this._fireAppReadyEvent()
-        // this._findLazyImportsInDocument()
       }
 
       _registerWindowGlobals() {
         window.appSession = this.$.session
         window.appRouter = this.$.router
         window.appPages = this.$.pages
+      }
+
+      _collectLazyImportsInDocument() {
+        const links = document.querySelectorAll("link[rel=lazy-import]")
+        const imports = {}
+
+        for (const link of links) {
+          const group = link.getAttribute("group")
+          const href = link.getAttribute("href")
+          imports[group] = imports[group] || []
+          imports[group].push(href)
+        }
+
+        this._imports = imports
+        // this._log("imports", imports)
       }
 
       _listenToLocationHashChanges() {
@@ -119,11 +135,6 @@
         })
       }
 
-      _findLazyImportsInDocument() {
-        const lazyImports = document.querySelectorAll("link[rel=lazy-import]")
-        this._log("lazy imports", lazyImports.map(it => it.href))
-      }
-
       _fireAppReadyEvent() {
         this.dispatchEvent(new CustomEvent("app-ready", { bubbles: true }))
         // window.dispatchEvent(new CustomEvent("app-ready"))
@@ -135,14 +146,14 @@
 
       _onPageNameChange(pageName) {
         if (this.$.session.active || pageName === "login") {
-          const elementName = "page-" + pageName
-          const elementHref = "./page-" + pageName + ".html"
-          const page = this.shadowRoot.querySelector(elementName)
+          // const page = this.$.pages._valueToItem(pageName)
+          const page = this.$.pages.querySelector("[name=" + pageName + "]")
+          const pageImport = (this._imports[pageName] || [])[0]
 
           if (page) {
-            if (!page.ready) {
-              this._importPageElement(elementHref, () => {
-                this._log("import", elementHref, page)
+            if (!page.ready && pageImport) {
+              this._importElement(pageImport, () => {
+                this._log("import", pageImport, page)
                 this._activatePage(page)
               })
             }
@@ -153,8 +164,8 @@
         }
       }
 
-      _importPageElement(pageHref, callback) {
-        Polymer.importHref(this.resolveUrl(pageHref), callback, null, true)
+      _importElement(importHref, okCallback, failCallback) {
+        Polymer.importHref(this.resolveUrl(importHref), okCallback, failCallback, true)
       }
 
       _createSession() {
