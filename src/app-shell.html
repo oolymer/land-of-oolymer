@@ -132,18 +132,24 @@
         if (window.appSession.active || this.pageName === "login") {
           const pageName = "page-" + this.pageName
           const pageHref = "./page-" + this.pageName + ".html"
-
           const page = this.shadowRoot.querySelector(pageName)
-          if (page && !page.ready) {
-            Polymer.importHref(this.resolveUrl(pageHref), () => {
-              this._log("page", pageHref, page)
+
+          if (page) {
+            if (!page.ready) {
+              this._importPageElement(pageHref, () => {
+                this._log("page", pageHref, page)
+                this._activatePage(page)
+              })
+            }
+            else {
               this._activatePage(page)
-            }, null, true)
-          }
-          else if (page) {
-            this._activatePage(page)
+            }
           }
         }
+      }
+
+      _importPageElement(pageHref, callback) {
+        Polymer.importHref(this.resolveUrl(pageHref), callback, null, true)
       }
 
       _createSession() {
