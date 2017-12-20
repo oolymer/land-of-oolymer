@@ -62,7 +62,10 @@
             reflectToAttribute: true
           },
 
-          pageName: String
+          pageName: {
+            type: String,
+            notify: true
+          }
         }
       }
 
@@ -74,6 +77,7 @@
         window.appPages = this.$.pages
 
         this._listenToLocationHashChanges()
+        this._listenToPageChanges()
         this._listenToPageSelectionChanges()
         this._fireAppReadyEvent()
 
@@ -86,13 +90,21 @@
           this._onLocationHashChange(window.location.hash)
         })
 
+        this._onLocationHashChange(window.location.hash)
+      }
+
+      _listenToPageChanges() {
+        this.addEventListener("page-name-changed", () => {
+          this._onPageNameChange()
+        })
+
         window.appSession.addEventListener("active-changed", () => {
           this._log("session", window.appSession.active)
-          this._onLocationHashChange(window.location.hash)
+          this._onPageNameChange()
         })
 
         this._log("session", window.appSession.active)
-        this._onLocationHashChange(window.location.hash)
+        this._onPageNameChange()
       }
 
       _listenToPageSelectionChanges() {
@@ -110,6 +122,28 @@
       _fireAppReadyEvent() {
         // window.dispatchEvent(new CustomEvent("app-ready"))
         this.dispatchEvent(new CustomEvent("app-ready", { bubbles: true }))
+      }
+
+      _onLocationHashChange(locationHash) {
+        this.pageName = locationHash.substring(1)
+      }
+
+      _onPageNameChange() {
+        if (window.appSession.active || this.pageName === "login") {
+          const pageName = "page-" + this.pageName
+          const pageHref = "./page-" + this.pageName + ".html"
+
+          const page = this.shadowRoot.querySelector(pageName)
+          if (page && !page.ready) {
+            Polymer.importHref(this.resolveUrl(pageHref), () => {
+              this._log("page", pageHref, page)
+              this._activatePage(page)
+            }, null, true)
+          }
+          else if (page) {
+            this._activatePage(page)
+          }
+        }
       }
 
       _createSession() {
@@ -135,26 +169,6 @@
       _deactivatePage(page) {
         if (typeof page.onDeactivated === "function") {
           page.onDeactivated()
-        }
-      }
-
-      _onLocationHashChange(locationHash) {
-        this.pageName = locationHash.substring(1)
-
-        if (window.appSession.active || window.location.hash === "#login") {
-          const pageName = "page-" + this.pageName
-          const pageHref = "./page-" + this.pageName + ".html"
-
-          const page = this.shadowRoot.querySelector(pageName)
-          if (page && !page.ready) {
-            Polymer.importHref(this.resolveUrl(pageHref), () => {
-              this._log("page", pageHref, page)
-              this._activatePage(page)
-            }, null, true)
-          }
-          else if (page) {
-            this._activatePage(page)
-          }
         }
       }
 
