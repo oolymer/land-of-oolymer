@@ -1,0 +1,93 @@
+<script src="../bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/lib/elements/dom-repeat.html">
+
+<dom-module id="demo-element">
+
+  <template>
+    magic properties
+
+    <div>
+      <button data-arg="inky" on-click="_changeFirstName">inky</button>
+      <button data-arg="blinky" on-click="_changeFirstName">blinky</button>
+      <button data-arg="pinky" on-click="_changeFirstName">pinky</button>
+      <button data-arg="clyde" on-click="[[_changeFirstNamePartial()]]">clyde</button>
+    </div>
+
+    <div>
+      <div>[[firstName]]</div>
+      <div>[[_toUppercase(firstName)]]</div>
+    </div>
+  </template>
+
+  <script>
+    // notify: true (property change notification event)
+    // - this.firstName
+    // - first-name-changed (addEventListener)
+
+    // readOnly: true
+    // - this.firstName
+    // - this._setFirstName(firstName)
+
+    // reflectToAttribute: true (reflecting properties to attributes)
+    // - this.firstName = "foo"
+    // - this.setAttribute("first-name", "foo")
+
+    // observer: "_firstNameChanged"
+    // - this.firstName
+    // - this._firstNameChanged = function (newValue, oldValue) {}
+
+    window.addEventListener("WebComponentsReady", () => {
+
+      class DemoElement extends Polymer.Element {
+
+        static get is() {
+          return "demo-element"
+        }
+
+        static get properties() {
+          return {
+            firstName: {
+              type: String,
+              notify: true, // first-name-changed
+              readOnly: true, // _setFirstName()
+              observer: "_firstNameChanged", // _firstNameChanged()
+              reflectToAttribute: true, // serialize property as string in attribute
+            }
+          }
+        }
+
+        _changeFirstName(event) {
+          console.log("change first name:", event)
+          this._setFirstName(event.currentTarget.dataset.arg)
+        }
+
+        // this does not work. on-click seems to not handle function reference handlers.
+        _changeFirstNamePartial() {
+          console.log("partial")
+          return event => {
+            console.log("change first name partial:", event)
+            this._setFirstName(event.currentTarget.dataset.arg)
+          }
+        }
+
+        _firstNameChanged(newValue, oldValue) {
+          console.log("first name changed:", newValue)
+        }
+
+        _toUppercase(text) {
+          return text.toUpperCase()
+        }
+
+      }
+
+      window.customElements.define(DemoElement.is, DemoElement)
+
+    })
+  </script>
+
+</dom-module>
+
+<body>
+  <demo-element></demo-element>
+</body>
