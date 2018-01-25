@@ -1,0 +1,115 @@
+<script src="../bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/lib/elements/dom-if.html">
+<link rel="import" href="../bower_components/polymer/lib/utils/render-status.html">
+
+<dom-module id="demo-element">
+
+  <template>
+    conditional templates.
+
+    <div
+      class="question-container"
+      style$="[[_computeQuestionVisibleStyle(question.visible)]]">
+
+      <div id="question" class="question-item">
+
+        <template is="dom-if" if="[[_isQuestionType(question.type, 'combo')]]">
+          <span class="question">[[question.type]] question</span>
+        </template>
+
+        <template is="dom-if" if="[[_isQuestionType(question.type, 'text')]]">
+          <span class="question">[[question.type]] question</span>
+        </template>
+
+        <template is="dom-if" if="[[_isQuestionType(question.type, 'date')]]">
+          <span class="question">[[question.type]] question</span>
+        </template>
+
+        <template is="dom-if" if="[[_isQuestionType(question.type, 'checkbox')]]">
+          <span class="question">[[question.type]] question</span>
+        </template>
+
+        <template is="dom-if" if="[[_isQuestionType(question.type, 'file')]]">
+          <span class="question">[[question.type]] question</span>
+        </template>
+
+        <template is="dom-if" if="[[_isQuestionType(question.type, 'number')]]">
+          <span class="question">[[question.type]] question</span>
+        </template>
+
+        <template is="dom-if" if="[[_isQuestionType(question.type, 'money')]]">
+          <span class="question">[[question.type]] question</span>
+        </template>
+
+      </div>
+
+      <div class="question-information">
+      </div>
+
+    </div>
+
+  </template>
+
+  <script>
+    // <dom-repeat filter="_filter">
+    //   <dom-if></dom-if>
+    //   <dom-if></dom-if>
+    //   <dom-if></dom-if>
+    // </dom-repeat>
+
+    window.addEventListener("WebComponentsReady", () => {
+
+      class DemoElement extends Polymer.Element {
+
+        static get is() {
+          return "demo-element"
+        }
+
+        static get properties() {
+          return {
+            question: {
+              type: Object
+            }
+          }
+        }
+
+        ready() {
+          super.ready()
+
+          this.question = {
+            visible: true,
+            type: "text"
+          }
+
+          Polymer.RenderStatus.afterNextRender(this, () => {
+            this._log("dom-if count:", this.shadowRoot.querySelectorAll("dom-if").length)
+            this._log(".question count:", this.shadowRoot.querySelectorAll(".question").length)
+          })
+        }
+
+        _computeQuestionVisibleStyle(isVisible) {
+          return "display: " + (isVisible ? "inherited" : "none")
+        }
+
+        _isQuestionType(actualQuestionType, expectedQuestionType) {
+          return actualQuestionType === expectedQuestionType
+        }
+
+        _log(...messages) {
+          console.log(`[${this.localName}]`, ...messages)
+        }
+
+      }
+
+      window.customElements.define(DemoElement.is, DemoElement)
+
+    })
+
+  </script>
+
+</dom-module>
+
+<body>
+  <demo-element></demo-element>
+</body>
