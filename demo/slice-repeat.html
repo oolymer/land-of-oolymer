@@ -1,0 +1,130 @@
+<script src="../bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/lib/elements/dom-repeat.html">
+
+<dom-module id="demo-element">
+
+  <template>
+    items.
+
+    <ul>
+      <template
+        is="dom-repeat"
+        items="[[items]]"
+        as="item">
+        <li>[[item]]</li>
+      </template>
+    </ul>
+
+    slice items.
+
+    <ul>
+      <template
+        is="dom-repeat"
+        items="[[_sliceItems(items, 0, 3)]]"
+        as="item">
+        <li>[[item]]</li>
+      </template>
+    </ul>
+
+    slice items and filter first item.
+
+    <ul>
+      <template
+        is="dom-repeat"
+        items="[[_sliceItems(items, 0, 3)]]"
+        as="item"
+        filter="_filterFirstItem">
+        <li>[[item]]</li>
+      </template>
+    </ul>
+
+    slice items and filter nth item.
+
+    <ul>
+      <template
+        is="dom-repeat"
+        items="[[_sliceItems(items, 0, 3)]]"
+        as="item"
+        filter="[[_filterNthItem(1)]]">
+        <li>[[item]]</li>
+      </template>
+    </ul>
+
+    slice and render.
+
+    <ul>
+      <template
+        id="repeater"
+        is="dom-repeat"
+        items="[[_sliceItems(items, 0, maxItems)]]"
+        as="item">
+        <li>[[item]]</li>
+      </template>
+    </ul>
+  </template>
+
+  <script>
+    window.addEventListener("WebComponentsReady", () => {
+
+      class DemoElement extends Polymer.Element {
+
+        static get is() {
+          return "demo-element"
+        }
+
+        static get properties() {
+          return {
+            items: {
+              type: Array,
+              value: () => ["foo", "bar", "baz", "quux", "quuux"]
+            },
+
+            maxItems: {
+              type: Number,
+              value: () => 0
+            }
+          }
+        }
+
+        ready() {
+          super.ready()
+          setInterval(() => {
+            this.maxItems = (this.maxItems + 1) % (this.items.length + 1)
+            this.$.repeater.render()
+          }, 500)
+        }
+
+        _sliceItems(items, start, stop) {
+          if (items) {
+            return items.slice(start, stop)
+          }
+        }
+
+        _filterFirstItem(item) {
+          // the filter callback function, that takes a single argument (the item) and returns
+          // true to display the item, false to omit it. for performance reasons, it does not
+          // include an index argument. if you need to look up the array index, you can use
+          // indexOf() on the array.
+          const itemIndex = this.items.indexOf(item)
+          return itemIndex === 0
+        }
+
+        _filterNthItem(index) {
+          return item => {
+            const itemIndex = this.items.indexOf(item)
+            return itemIndex === index
+          }
+        }
+      }
+
+      window.customElements.define(DemoElement.is, DemoElement)
+
+    })
+  </script>
+
+</dom-module>
+
+<body>
+  <demo-element></demo-element>
+</body>
