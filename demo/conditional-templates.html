@@ -15,31 +15,31 @@
       <div id="question" class="question-item">
 
         <template is="dom-if" if="[[_isQuestionType(question.type, 'combo')]]">
-          <span class="question">[[question.type]] question</span>
+          <span class="combo question">[[question.type]] question</span>
         </template>
 
         <template is="dom-if" if="[[_isQuestionType(question.type, 'text')]]">
-          <span class="question">[[question.type]] question</span>
+          <span class="text question">[[question.type]] question</span>
         </template>
 
         <template is="dom-if" if="[[_isQuestionType(question.type, 'date')]]">
-          <span class="question">[[question.type]] question</span>
+          <span class="date question">[[question.type]] question</span>
         </template>
 
         <template is="dom-if" if="[[_isQuestionType(question.type, 'checkbox')]]">
-          <span class="question">[[question.type]] question</span>
+          <span class="checkbox question">[[question.type]] question</span>
         </template>
 
         <template is="dom-if" if="[[_isQuestionType(question.type, 'file')]]">
-          <span class="question">[[question.type]] question</span>
+          <span class="file question">[[question.type]] question</span>
         </template>
 
         <template is="dom-if" if="[[_isQuestionType(question.type, 'number')]]">
-          <span class="question">[[question.type]] question</span>
+          <span class="number question">[[question.type]] question</span>
         </template>
 
         <template is="dom-if" if="[[_isQuestionType(question.type, 'money')]]">
-          <span class="question">[[question.type]] question</span>
+          <span class="money question">[[question.type]] question</span>
         </template>
 
       </div>
@@ -48,15 +48,32 @@
       </div>
 
     </div>
-
   </template>
 
   <script>
+    // variant 1:
+    // <div id="questions">
+    //   <dom-if><text-question></dom-if>
+    //   <dom-if><checkbox-question></dom-if>
+    //   <dom-if><combobox-question></dom-if>
+    // </div>
+
+    // variant 2:
     // <dom-repeat filter="_filter">
-    //   <dom-if></dom-if>
-    //   <dom-if></dom-if>
-    //   <dom-if></dom-if>
+    //   <text-question>
+    //   <checkbox-question>
+    //   <combobox-question>
     // </dom-repeat>
+
+    // variant 3:
+    // const template = this._createTemplate(this._templates[this.question.type])
+    // const instance = this._stampTemplate(template)
+    // this.shadowRoot.appendChild(instance)
+
+    // variant 4:
+    // const instance = document.createElement(this.question.type + "-question")
+    // instance.setAttribute("question", this.question)
+    // this.shadowRoot.appendChild(instance)
 
     window.addEventListener("WebComponentsReady", () => {
 
@@ -74,19 +91,75 @@
           }
         }
 
+        static get template() {
+          this.prototype._templates = {
+            combo: `
+              <span class="combo question">[[question.type]] question</span>
+            `,
+
+            text: `
+              <span class="text question">[[question.type]] question</span>
+            `,
+
+            date: `
+              <span class="date question">[[question.type]] question</span>
+            `,
+
+            checkbox: `
+              <span class="checkbox question">[[question.type]] question</span>
+            `,
+
+            file: `
+              <span class="file question">[[question.type]] question</span>
+            `,
+
+            number: `
+              <span class="number question">[[question.type]] question</span>
+            `,
+
+            money: `
+              <span class="money question">[[question.type]] question</span>
+            `,
+          }
+
+          const template = Polymer.DomModule.import(this.is, "template")
+          // const template = document.createElement("template")
+          return template
+        }
+
         ready() {
           super.ready()
 
           this.question = {
             visible: true,
-            type: "text"
+            type: "number"
           }
+
+          // this._attachQuestionElement()
 
           Polymer.RenderStatus.afterNextRender(this, () => {
             this._log("dom-if count:", this.shadowRoot.querySelectorAll("dom-if").length)
             this._log(".question count:", this.shadowRoot.querySelectorAll(".question").length)
           })
         }
+
+        _attachQuestionElement() {
+          // create template element.
+          const template = document.createElement("template")
+          template.innerHTML = this._templates[this.question.type].trim()
+
+          // append stamped template instance.
+          const instance = this._stampTemplate(template)
+          // console.log(template.content, instance)
+          this.shadowRoot.appendChild(instance)
+        }
+
+        // _attachDom(dom) {
+        //   console.log(this.question)
+        //   console.log(dom.nodeList)
+        //   console.log(dom.querySelector(".question"))
+        //   return super._attachDom(dom)
+        // }
 
         _computeQuestionVisibleStyle(isVisible) {
           return "display: " + (isVisible ? "inherited" : "none")
