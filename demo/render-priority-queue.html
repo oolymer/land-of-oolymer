@@ -1,0 +1,183 @@
+<script src="../bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+<script src="../bower_components/d3-queue/d3-queue.js"></script>
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/lib/elements/custom-style.html">
+<link rel="import" href="../bower_components/polymer/lib/utils/unresolved.html">
+<link rel="import" href="../bower_components/polymer/lib/elements/dom-if.html">
+<link rel="import" href="../bower_components/polymer/lib/elements/dom-repeat.html">
+<link rel="import" href="../bower_components/polymer/lib/utils/render-status.html">
+<link rel="import" href="../bower_components/paper-styles/typography.html">
+
+<body unresolved>
+  <custom-style>
+    <style>
+      html {
+        @apply --paper-font-common-base;
+      }
+
+      body {
+        margin: 25px;
+      }
+    </style>
+  </custom-style>
+
+  <p>render priority queue</p>
+  <demo-element></demo-element>
+</body>
+
+<dom-module id="demo-element">
+
+  <template>
+    <template
+      is="dom-repeat"
+      items="[[items]]"
+      initial-count="20"
+      target-framerate="0">
+
+      <foo-element index="[[index]]">element [[index]]</foo-element>
+    </template>
+  </template>
+
+  <script>
+    window.TemplateQueue = window.TemplateQueue || {}
+
+    const tasks = []
+    TemplateQueue.enqueue = function (task) {
+      tasks.push(task)
+      tasks.sort((task1, task2) => {
+        return task2.metadata.index - task1.metadata.index
+      })
+    }
+
+    TemplateQueue.dequeue = function (task) {
+      tasks.splice(tasks.indexOf(task), 1)
+    }
+
+    TemplateQueue.newBatch = function () {
+      const batch = {
+        tasks: tasks.slice(0, 3),
+        wasCanceled: false
+      }
+      return batch
+    }
+
+    function nextTick(context) {
+      Polymer.RenderStatus.beforeNextRender(context, () => {
+        console.log(Math.round(window.performance.now()), "before next render")
+        const batch = TemplateQueue.newBatch()
+        const q = d3.queue()
+        batch.tasks.forEach(task => {
+          TemplateQueue.dequeue(task)
+          q.defer(task.run)
+        })
+        q.await(error => {
+          if (!batch.wasCanceled && batch.tasks.length > 0) {
+            nextTick()
+          }
+        })
+      })
+    }
+
+    window.addEventListener("WebComponentsReady", () => {
+
+      class DemoElement extends Polymer.Element {
+
+        static get is() {
+          return "demo-element"
+        }
+
+        static get properties() {
+          return {
+            items: {
+              type: Array,
+              value: () => [
+                0, 1, 2, 3, 4, 5,
+                6, 7, 8, 9, 10, 11,
+                12, 13, 14, 15, 16, 17
+              ]
+            }
+          }
+        }
+
+        ready() {
+          super.ready()
+          nextTick(this)
+        }
+
+      }
+
+      window.customElements.define(DemoElement.is, DemoElement)
+
+    })
+  </script>
+
+</dom-module>
+
+<dom-module id="foo-element">
+
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <template is="dom-if" if="[[visible]]">
+      <div><slot></slot></div>
+    </template>
+  </template>
+
+  <script>
+    window.addEventListener("WebComponentsReady", () => {
+
+      class FooElement extends Polymer.Element {
+
+        static get is() {
+          return "foo-element"
+        }
+
+        static get properties() {
+          return {
+            visible: {
+              type: Boolean,
+              value: () => false
+            },
+
+            delay: {
+              type: Number,
+              value: () => 1500
+            },
+
+            index: Number
+          }
+        }
+
+        ready() {
+          super.ready()
+
+          const task = {
+            run: done => {
+              setTimeout(() => {
+                this._changeContainerVisible()
+                done(null)
+              }, this.delay)
+            },
+
+            metadata: {
+              index: this.index
+            }
+          }
+          TemplateQueue.enqueue(task)
+        }
+
+        _changeContainerVisible() {
+          this.visible = true
+        }
+      }
+
+      window.customElements.define(FooElement.is, FooElement)
+
+    })
+  </script>
+
+</dom-module>

@@ -12,7 +12,8 @@
     "paper-icon-button": "PolymerElements/paper-icon-button#^2.0.0",
     "paper-spinner": "PolymerElements/paper-spinner#^2.0.0",
     "paper-styles": "PolymerElements/paper-styles#^2.0.0",
-    "font-roboto": "PolymerElements/font-roboto-local#^1.0.1"
+    "font-roboto": "PolymerElements/font-roboto-local#^1.0.1",
+    "d3-queue": "d3/d3-queue-bower#^3.0.7"
   },
   "devDependencies": {
     "web-component-tester": "Polymer/web-component-tester#6.4.1",
