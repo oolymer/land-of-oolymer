@@ -24,7 +24,9 @@
         ready() {
           super.ready()
 
-          const target = document.body
+          const target = window.parent.document
+          // const target = window.document
+
           target.addEventListener("parent-to-child", event => {
             console.log("[iframe-child] received event", event.detail, event.target)
           })
@@ -32,12 +34,11 @@
 
           setTimeout(() => {
             console.log("[iframe-child] dispatch event")
-            target.setAttribute("data-child", "child")
-            target.dispatchEvent(new CustomEvent("child-to-parent"), {
+            target.dispatchEvent(new CustomEvent("child-to-parent", {
               detail: {
-                text: "child"
+                payload: "source: child"
               }
-            })
+            }))
           }, 2000)
         }
 
