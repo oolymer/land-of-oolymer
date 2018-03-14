@@ -1,0 +1,65 @@
+<script src="../bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<dom-module id="demo-element">
+
+  <template>
+    <style>
+      iframe {
+        width: 500px;
+        height: 250px;
+        border: 2px solid tomato;
+      }
+    </style>
+
+    <p>iframe parent element</p>
+    <iframe id="iframe" src="./iframe-child.html"></iframe>
+  </template>
+
+  <script>
+    window.addEventListener("WebComponentsReady", () => {
+
+      class DemoElement extends Polymer.Element {
+
+        static get is() {
+          return "demo-element"
+        }
+
+        static get properties() {
+          return {
+          }
+        }
+
+        ready() {
+          super.ready()
+          const iframe = this.$.iframe
+
+          setTimeout(() => {
+            const target = iframe.contentWindow.document.body
+
+            target.addEventListener("child-to-parent", event => {
+              console.log("[iframe-parent] received event", event.detail, event.target)
+            })
+            console.log("[iframe-parent] added event listener")
+
+            console.log("[iframe-parent] dispatch event")
+            target.setAttribute("data-parent", "parent")
+            target.dispatchEvent(new CustomEvent("parent-to-child"), {
+              detail: {
+                text: "parent"
+              }
+            })
+          }, 1000)
+        }
+      }
+
+      window.customElements.define(DemoElement.is, DemoElement)
+
+    })
+  </script>
+
+</dom-module>
+
+<body>
+  <demo-element></demo-element>
+</body>
