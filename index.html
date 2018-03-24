@@ -11,8 +11,29 @@
     <script src="./bower_components/webcomponentsjs/webcomponents-loader.js"></script>
     <link rel="import" href="./src/app-shell.html">
   </head>
-  <body>
-    <app-shell></app-shell>
+
+  <body unresolved>
+    <custom-style>
+      <style>
+        body {
+          @apply --paper-font-common-base;
+          background-color: var(--paper-grey-50);
+          margin: 0;
+          padding: 24px;
+        }
+
+        body {
+          transition: opacity ease-in 0.2s;
+        }
+
+        body[unresolved] {
+          opacity: 0;
+          display: block;
+          overflow: hidden;
+          position: relative;
+        }
+      </style>
+    </custom-style>
 
     <script>
       window.log = function(...messages) {
@@ -31,5 +52,7 @@
         window.log("application ready.")
       })
     </script>
+
+    <app-shell></app-shell>
   </body>
 </html>
