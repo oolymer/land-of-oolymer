@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>demo</title>
+
+<script src="../bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/lib/elements/custom-style.html">
+<link rel="import" href="../bower_components/polymer/lib/utils/unresolved.html">
+<link rel="import" href="../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../bower_components/paper-styles/paper-styles-classes.html">
+
+<body unresolved>
+  <custom-style>
+    <style>
+      html {
+        @apply --paper-font-common-base;
+      }
+
+      body {
+        margin: 25px;
+        background: var(--paper-grey-100);
+      }
+    </style>
+  </custom-style>
+
+  <p>iframe events parent</p>
+  <demo-element></demo-element>
+</body>
+
+<dom-module id="demo-element">
+
+  <template>
+    <style>
+      iframe {
+        width: 500px;
+        height: 250px;
+        border: 2px solid tomato;
+      }
+    </style>
+
+    <p>iframe parent element</p>
+    <iframe id="iframe" src="[[src]]"></iframe>
+  </template>
+
+  <script>
+    window.addEventListener("WebComponentsReady", () => {
+
+      class DemoElement extends Polymer.Element {
+
+        static get is() {
+          return "demo-element"
+        }
+
+        static get properties() {
+          return {
+            src: {
+              type: String,
+              value: () => "./iframe-events-child.html"
+            }
+          }
+        }
+
+        ready() {
+          super.ready()
+
+          this._communicateWithChild()
+        }
+
+        _communicateWithChild() {
+          setTimeout(() => {
+            const iframe = this.$.iframe
+            const target = window.document
+            // const target = iframe.contentWindow.document
+
+            target.addEventListener("child-to-parent", event => {
+              console.log("[iframe-parent] received event", event.detail, event.target)
+            })
+            console.log("[iframe-parent] added event listener")
+
+            console.log("[iframe-parent] dispatch event")
+            target.dispatchEvent(new CustomEvent("parent-to-child", {
+              detail: {
+                payload: "source: parent"
+              }
+            }))
+          }, 1000)
+        }
+      }
+
+      window.customElements.define(DemoElement.is, DemoElement)
+
+    })
+  </script>
+
+</dom-module>

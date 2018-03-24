@@ -1,21 +1,25 @@
 {
   "name": "land-of-oolymer",
   "private": true,
-  "scripts": {
-    "browser": "./node_modules/.bin/npm-run-all --parallel serve browser:after",
-    "browser:after": "./node_modules/.bin/npm-run-all --serial serve:watch",
-    "build": "./node_modules/.bin/polymer build",
-    "build:docs": "./node_modules/.bin/polymer analyze > analysis.json",
-    "serve": "./node_modules/.bin/polymer serve --port 3100",
-    "serve:build": "./node_modules/.bin/polymer serve --port 4000 build/default",
-    "serve:watch": "./node_modules/.bin/browser-sync start --port 3000 --proxy 'localhost:3100' --no-ui --files '*.html, demo/**/*.html, src/**/*.html, test/**/*.html' --startPath \"/components/$npm_package_name/\"",
-    "test": "./node_modules/.bin/polymer test --local chrome,firefox"
-  },
   "devDependencies": {
     "bower": "1.8.2",
-    "browser-sync": "2.23.5",
+    "browser-sync": "2.23.6",
+    "npm-delay": "1.0.4",
     "npm-run-all": "4.1.2",
-    "polymer-cli": "1.5.7",
-    "web-component-tester": "6.4.1"
+    "polymer-cli": "1.6.0",
+    "web-component-tester": "6.5.0"
+  },
+  "scripts": {
+    "browser": "./node_modules/.bin/npm-run-all --parallel serve browser:after",
+    "browser:after": "./node_modules/.bin/npm-run-all --serial util:delay serve:watch",
+    "build": "./node_modules/.bin/polymer build",
+    "build:docs": "./node_modules/.bin/polymer analyze > analysis.json",
+    "serve": "./node_modules/.bin/polymer serve --port 8000",
+    "serve:build": "./node_modules/.bin/polymer serve --port 8200 build/default",
+    "serve:watch": "./node_modules/.bin/browser-sync start --port 8100 --proxy 'localhost:8000' --no-ui --files '*.html, demo/**/*.html, src/**/*.html, test/**/*.html' --startPath \"/components/$npm_package_name/\"",
+    "test": "./node_modules/.bin/wct --local chrome --local firefox --configFile 'wct-headless.conf.json'",
+    "test:chrome": "./node_modules/.bin/polymer test --local chrome --persistent --skip-selenium-install",
+    "test:firefox": "./node_modules/.bin/polymer test --local firefox --persistent --skip-selenium-install",
+    "util:delay": "node ./node_modules/.bin/npm-delay 100"
   }
 }

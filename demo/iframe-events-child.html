@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>demo</title>
+
+<script src="../bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/lib/elements/custom-style.html">
+<link rel="import" href="../bower_components/polymer/lib/utils/unresolved.html">
+<link rel="import" href="../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../bower_components/paper-styles/paper-styles-classes.html">
+
+<body unresolved>
+  <custom-style>
+    <style>
+      html {
+        @apply --paper-font-common-base;
+      }
+
+      body {
+        margin: 25px;
+        background: var(--paper-grey-100);
+      }
+    </style>
+  </custom-style>
+
+  <p>iframe events child</p>
+  <demo-element></demo-element>
+</body>
+
+<dom-module id="demo-element">
+
+  <template>
+    <p>iframe child element</p>
+  </template>
+
+  <script>
+    window.addEventListener("WebComponentsReady", () => {
+
+      class DemoElement extends Polymer.Element {
+
+        static get is() {
+          return "demo-element"
+        }
+
+        static get properties() {
+          return {
+          }
+        }
+
+        ready() {
+          super.ready()
+
+          this._communicateWithParent()
+        }
+
+        _communicateWithParent() {
+          const target = window.parent.document
+          // const target = window.document
+
+          target.addEventListener("parent-to-child", event => {
+            console.log("[iframe-child] received event", event.detail, event.target)
+          })
+          console.log("[iframe-child] added event listener")
+
+          setTimeout(() => {
+            console.log("[iframe-child] dispatch event")
+            target.dispatchEvent(new CustomEvent("child-to-parent", {
+              detail: {
+                payload: "source: child"
+              }
+            }))
+          }, 2000)
+        }
+
+      }
+
+      window.customElements.define(DemoElement.is, DemoElement)
+
+    })
+  </script>
+
+</dom-module>

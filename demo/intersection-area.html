@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>demo</title>
+
+<script src="../bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/lib/elements/custom-style.html">
+<link rel="import" href="../bower_components/polymer/lib/utils/unresolved.html">
+<link rel="import" href="../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../bower_components/paper-styles/paper-styles-classes.html">
+
+<link rel="import" href="../bower_components/polymer/lib/elements/dom-repeat.html">
+
+<body unresolved>
+  <custom-style>
+    <style>
+      html {
+        @apply --paper-font-common-base;
+      }
+
+      body {
+        margin: 25px;
+        background: var(--paper-grey-100);
+      }
+    </style>
+  </custom-style>
+
+  <p>intersection area</p>
+  <demo-element></demo-element>
+</body>
+
+<dom-module id="demo-element">
+
+  <template>
+    <style>
+      .container {
+        max-height: 500px;
+        max-width: 500px;
+        overflow-y: scroll;
+        border: 1px solid silver;
+      }
+
+      .container>div {
+        min-height: 600px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      intersection-observer {
+        padding: 20px;
+        margin: 20px;
+        text-align: center;
+        transition: background-color 1s;
+      }
+
+      intersection-observer[visible] {
+        background-color: lightblue;
+      }
+    </style>
+
+    <div class="container">
+      <div>
+
+        <template is="dom-repeat" items="[[indices]]" as="_index">
+
+          <intersection-observer>
+            <span>[[_index]]</span>
+          </intersection-observer>
+
+        </template>
+
+      </div>
+    </div>
+  </template>
+
+  <script>
+    // documentation for intersection observer web api:
+    // - https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
+
+    // polymer intersection observer removed from news example app:
+    // - https://github.com/Polymer/news/pull/96/files
+
+    window.addEventListener("WebComponentsReady", () => {
+
+      class DemoElement extends Polymer.Element {
+
+        static get is() {
+          return "demo-element"
+        }
+
+        static get properties() {
+          return {
+            indices: {
+              type: Array,
+              value: () => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+            }
+          }
+        }
+
+      }
+
+      window.customElements.define(DemoElement.is, DemoElement)
+
+    })
+  </script>
+
+</dom-module>
+
+<dom-module id="intersection-observer">
+
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <div id="slottedData">
+      <slot></slot>
+    </div>
+  </template>
+
+  <script>
+    window.addEventListener("WebComponentsReady", () => {
+
+      class IntersectionObserver extends Polymer.Element {
+
+        static get is() {
+          return "intersection-observer"
+        }
+
+        static get properties() {
+          return {
+            thresholds: {
+              type: Array,
+              value: () => [0.0, 0.25, 0.5, 0.75, 1.0]
+            },
+
+            visible: {
+              type: Boolean,
+              value: false,
+              readOnly: true,
+              notify: true,
+              reflectToAttribute: true
+            },
+
+            ratio: {
+              type: Number,
+              readOnly: true,
+              reflectToAttribute: true
+            },
+
+            visibleLimit: {
+              type: Number,
+              value: 0.5,
+              reflectToAttribute: true
+            }
+          }
+        }
+
+        connectedCallback() {
+          super.connectedCallback()
+
+          const IntersectionObserver = window.IntersectionObserver
+
+          this._observer = new IntersectionObserver(this._handleIntersection.bind(this), {
+            root: document.rootElement,
+            rootMargin: "0px",
+            threshold: this.thresholds
+          })
+
+          this._observer.observe(this.$.slottedData)
+        }
+
+        _handleIntersection(entries) {
+          if (!document.hidden) {
+            for (const entry of entries) {
+              this._setRatio(Number(entry.intersectionRatio).toFixed(2))
+              this._setVisible(this.ratio > this.visibleLimit)
+            }
+          }
+          else {
+            this._setVisible(false)
+          }
+        }
+
+      }
+
+      window.customElements.define(IntersectionObserver.is, IntersectionObserver)
+
+    })
+  </script>
+</dom-module>

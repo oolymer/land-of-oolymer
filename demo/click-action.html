@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>demo</title>
+
+<script src="../bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/lib/elements/custom-style.html">
+<link rel="import" href="../bower_components/polymer/lib/utils/unresolved.html">
+<link rel="import" href="../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../bower_components/paper-styles/paper-styles-classes.html">
+
+<link rel="import" href="../bower_components/polymer/lib/elements/dom-repeat.html">
+
+<body unresolved>
+  <custom-style>
+    <style>
+      html {
+        @apply --paper-font-common-base;
+      }
+
+      body {
+        margin: 25px;
+        background: var(--paper-grey-100);
+      }
+    </style>
+  </custom-style>
+
+  <p>click action</p>
+  <demo-element></demo-element>
+</body>
+
+<dom-module id="demo-element">
+
+  <template>
+    <style>
+      .demo {
+        width: 250px;
+      }
+
+      .item {
+        margin: 5px 0 5px 0;
+        background: tomato;
+        padding: 5px;
+        cursor: pointer;
+      }
+    </style>
+
+    <div class="demo">
+      <template
+        id="repeater"
+        is="dom-repeat"
+        items="[[names]]"
+        as="name"
+        index-as="index">
+
+        <div
+          id="item_[[name]]"
+          class="item"
+          on-click="_onClickItem"
+          data-name$="[[name]]"
+          data-index$="[[index]]">
+          <span>[[name]]</span>
+        </div>
+      </template>
+    </div>
+  </template>
+
+  <script>
+    window.addEventListener("WebComponentsReady", () => {
+
+      class DemoElement extends Polymer.Element {
+
+        static get is() {
+          return "demo-element"
+        }
+
+        static get properties() {
+          return {
+            names: {
+              type: Array,
+              value: () => ["inky", "blinky", "pinky", "clyde"]
+            }
+          }
+        }
+
+        _onClickItem(event) {
+          const repeater = this.$.repeater
+          console.log("---")
+          console.log("target: ", event.target)
+          console.log("current target:", event.currentTarget)
+          console.log("path index:", event.composedPath().indexOf(event.currentTarget))
+          console.log(
+            "[event.model]",
+            typeof event.model,
+            event.model[repeater.as],
+            event.model[repeater.indexAs]
+          )
+          console.log(
+            "[dom-repeat]",
+            typeof repeater.modelForElement(event.target),
+            repeater.itemForElement(event.target),
+            repeater.indexForElement(event.target)
+          )
+          console.log(
+            "[data-* dataset]",
+            event.currentTarget.dataset[repeater.as],
+            parseInt(event.currentTarget.dataset[repeater.indexAs])
+          )
+          console.log(
+            "[data-* attribute]",
+            event.currentTarget.getAttribute("data-" + repeater.as),
+            parseInt(event.currentTarget.getAttribute("data-" + repeater.indexAs))
+          )
+        }
+      }
+
+      window.customElements.define(DemoElement.is, DemoElement)
+
+    })
+  </script>
+
+</dom-module>

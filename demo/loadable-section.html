@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>demo</title>
+
+<script src="../bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/lib/elements/custom-style.html">
+<link rel="import" href="../bower_components/polymer/lib/utils/unresolved.html">
+<link rel="import" href="../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../bower_components/paper-styles/paper-styles-classes.html">
+
+<link rel="import" href="../bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner-lite.html">
+<link rel="import" href="../bower_components/paper-styles/shadow.html">
+<link rel="import" href="../bower_components/paper-styles/typography.html">
+
+<body unresolved>
+  <custom-style>
+    <style include="paper-material-styles">
+      html {
+        @apply --paper-font-common-base;
+      }
+
+      body {
+        margin: 25px;
+        background: var(--paper-grey-100);
+      }
+    </style>
+  </custom-style>
+
+  <p>loadable section</p>
+  <demo-element no-open-on-loaded timeout-ms="5000"></demo-element>
+  <demo-element time-ms="2000"></demo-element>
+</body>
+
+<dom-module id="demo-element">
+
+  <template>
+    <style include="iron-flex iron-flex-alignment">
+      :host {
+        display: block;
+      }
+
+      section {
+        @apply --shadow-elevation-2dp;
+        width: 600px;
+        padding: 25px;
+        margin-bottom: 25px;
+      }
+
+      header {
+        @apply --layout-horizontal;
+        @apply --layout-center;
+        height: 35px;
+      }
+
+      header #openButton {
+        margin-left: -10px;
+        /* margin-top: -5px; */
+      }
+
+      header #loadSpinner {
+        margin-left: -4px;
+        margin-right: 6px;
+        /* margin-bottom: -8px; */
+      }
+
+      header #title {
+        display: inline-block;
+        margin-left: 8px;
+        font-weight: 700;
+      }
+    </style>
+
+    <section>
+      <header>
+        <template is="dom-if" if="[[loaded]]">
+          <paper-icon-button
+            id="openButton"
+            icon="[[_calculateIcon(opened)]]"
+            active="{{opened}}"
+            toggles>
+          </paper-icon-button>
+        </template>
+
+        <template is="dom-if" if="[[!loaded]]">
+          <paper-spinner-lite
+            id="loadSpinner"
+            active="[[!loaded]]">
+          </paper-spinner-lite>
+        </template>
+
+        <div id="title">[[title]]</div>
+      </header>
+
+      <content>
+        <iron-collapse
+          id="collapse"
+          opened="[[opened]]">
+          <!-- no-animation> -->
+
+          <div>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+            <p>Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+
+            <p>Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.
+          </div>
+
+        </iron-collapse>
+      </content>
+    </section>
+  </template>
+
+  <script>
+    window.addEventListener("WebComponentsReady", () => {
+
+      class DemoElement extends Polymer.Element {
+
+        static get is() {
+          return "demo-element"
+        }
+
+        static get properties() {
+          return {
+            loaded: {
+              type: Boolean,
+              value: () => false,
+              notify: true,
+              reflectToAttribute: true
+            },
+
+            opened: {
+              type: Boolean,
+              value: () => false,
+              notify: true,
+              reflectToAttribute: true
+            },
+
+            noOpenOnLoaded: {
+              type: Boolean,
+              value: () => false
+            },
+
+            title: {
+              type: String,
+              value: () => null
+            },
+
+            icon: {
+              type: String,
+              value: () => null
+            },
+
+            timeoutMs: {
+              type: Number,
+              value: () => 3500
+            }
+          }
+        }
+
+        ready() {
+          super.ready()
+
+          this.title = "Lorem ipsum dolor sit amet"
+          this._timeout(this.timeoutMs, () => {
+            this.loaded = true
+            if (!this.noOpenOnLoaded) {
+              this.opened = true
+            }
+          })
+        }
+
+        _calculateIcon(opened) {
+          return opened ? ICON_SECTION_OPENED : ICON_SECTION_CLOSED
+        }
+
+        _timeout(millis, action) {
+          return setTimeout(action, millis)
+        }
+      }
+
+      const ICON_SECTION_OPENED = "expand-more"
+      const ICON_SECTION_CLOSED = "chevron-right"
+
+      window.customElements.define(DemoElement.is, DemoElement)
+
+    })
+  </script>
+
+</dom-module>
