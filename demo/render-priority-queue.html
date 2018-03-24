@@ -1,8 +1,15 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>demo</title>
+
 <script src="../bower_components/webcomponentsjs/webcomponents-loader.js"></script>
-<script src="../bower_components/d3-queue/d3-queue.js"></script>
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/polymer/lib/elements/custom-style.html">
 <link rel="import" href="../bower_components/polymer/lib/utils/unresolved.html">
+<link rel="import" href="../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../bower_components/paper-styles/paper-styles-classes.html">
+
+<script src="../bower_components/d3-queue/d3-queue.js"></script>
 <link rel="import" href="../bower_components/polymer/lib/elements/dom-if.html">
 <link rel="import" href="../bower_components/polymer/lib/elements/dom-repeat.html">
 <link rel="import" href="../bower_components/polymer/lib/utils/render-status.html">
@@ -17,6 +24,7 @@
 
       body {
         margin: 25px;
+        background: var(--paper-grey-100);
       }
     </style>
   </custom-style>
@@ -24,6 +32,13 @@
   <p>render priority queue</p>
   <demo-element></demo-element>
 </body>
+
+<!--
+
+- templateStampQueueMixin (lateinit depends on templateQueueElement)
+- templateStampQueueElement (handles queue actions)
+
+-->
 
 <dom-module id="demo-element">
 

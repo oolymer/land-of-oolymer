@@ -1,7 +1,14 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>demo</title>
+
 <script src="../bower_components/webcomponentsjs/webcomponents-loader.js"></script>
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/polymer/lib/elements/custom-style.html">
 <link rel="import" href="../bower_components/polymer/lib/utils/unresolved.html">
+<link rel="import" href="../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../bower_components/paper-styles/paper-styles-classes.html">
+
 <link rel="import" href="../bower_components/iron-collapse/iron-collapse.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
@@ -19,12 +26,14 @@
 
       body {
         margin: 25px;
+        background: var(--paper-grey-100);
       }
     </style>
   </custom-style>
 
   <p>loadable section</p>
-  <demo-element></demo-element>
+  <demo-element no-open-on-loaded timeout-ms="5000"></demo-element>
+  <demo-element time-ms="2000"></demo-element>
 </body>
 
 <dom-module id="demo-element">
@@ -36,9 +45,10 @@
       }
 
       section {
-        @apply --shadow-elevation-4dp;
+        @apply --shadow-elevation-2dp;
         width: 600px;
         padding: 25px;
+        margin-bottom: 25px;
       }
 
       header {
@@ -89,8 +99,8 @@
       <content>
         <iron-collapse
           id="collapse"
-          opened="[[opened]]"
-          no-animation>
+          opened="[[opened]]">
+          <!-- no-animation> -->
 
           <div>
             <p>Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
@@ -130,6 +140,11 @@
               reflectToAttribute: true
             },
 
+            noOpenOnLoaded: {
+              type: Boolean,
+              value: () => false
+            },
+
             title: {
               type: String,
               value: () => null
@@ -138,6 +153,11 @@
             icon: {
               type: String,
               value: () => null
+            },
+
+            timeoutMs: {
+              type: Number,
+              value: () => 3500
             }
           }
         }
@@ -146,9 +166,11 @@
           super.ready()
 
           this.title = "Lorem ipsum dolor sit amet"
-          this._timeout(5000, () => {
+          this._timeout(this.timeoutMs, () => {
             this.loaded = true
-            this.opened = true
+            if (!this.noOpenOnLoaded) {
+              this.opened = true
+            }
           })
         }
 
@@ -162,7 +184,7 @@
       }
 
       const ICON_SECTION_OPENED = "expand-more"
-      const ICON_SECTION_CLOSED = "expand-less"
+      const ICON_SECTION_CLOSED = "chevron-right"
 
       window.customElements.define(DemoElement.is, DemoElement)
 

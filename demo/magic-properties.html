@@ -1,12 +1,37 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>demo</title>
+
 <script src="../bower_components/webcomponentsjs/webcomponents-loader.js"></script>
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/lib/elements/custom-style.html">
+<link rel="import" href="../bower_components/polymer/lib/utils/unresolved.html">
+<link rel="import" href="../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../bower_components/paper-styles/paper-styles-classes.html">
+
 <link rel="import" href="../bower_components/polymer/lib/elements/dom-repeat.html">
+
+<body unresolved>
+  <custom-style>
+    <style>
+      html {
+        @apply --paper-font-common-base;
+      }
+
+      body {
+        margin: 25px;
+        background: var(--paper-grey-100);
+      }
+    </style>
+  </custom-style>
+
+  <p>magic properties</p>
+  <demo-element></demo-element>
+</body>
 
 <dom-module id="demo-element">
 
   <template>
-    magic properties
-
     <div>
       <button data-arg="inky" on-click="_changeFirstName">inky</button>
       <button data-arg="blinky" on-click="_changeFirstName">blinky</button>
@@ -36,6 +61,34 @@
     // observer: "_firstNameChanged"
     // - this.firstName
     // - this._firstNameChanged = function (newValue, oldValue) {}
+
+    // computed: ???
+    // - ???
+    // - !!!
+
+    // static get observers() {
+    //   return [
+    //     "_onUserFirstNameChanged(user.firstName)",
+    //     "_onUserChanged(user.*)"
+    //   ]
+    // }
+
+    // _onUserFirstNameChanged(firstName) {
+
+    // _onUserChanged(changeRecord) {
+    //   const newValue = changeRecord.value
+    //   const propertyPath = changeRecord.path
+    //   const rootProperty = { user: changeRecord.base }
+
+    //   const hasSpliceRecords = (changeRecord) => {
+    //     const { value, path, base } = changeRecord
+    //     return value && !isNil(value.indexSplices) && path.endsWith(".splices")
+    //   }
+
+    //   const toSpliceRecord = (indexSplice) => {
+    //     const { object, index, removed, addedCount } = indexSplice
+    //     return { items: object, startIndex: index, removedItems: removed, addedCount }
+    //   }
 
     window.addEventListener("WebComponentsReady", () => {
 
@@ -87,7 +140,3 @@
   </script>
 
 </dom-module>
-
-<body>
-  <demo-element></demo-element>
-</body>

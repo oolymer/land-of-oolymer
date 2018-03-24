@@ -1,5 +1,31 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>demo</title>
+
 <script src="../bower_components/webcomponentsjs/webcomponents-loader.js"></script>
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/lib/elements/custom-style.html">
+<link rel="import" href="../bower_components/polymer/lib/utils/unresolved.html">
+<link rel="import" href="../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../bower_components/paper-styles/paper-styles-classes.html">
+
+<body unresolved>
+  <custom-style>
+    <style>
+      html {
+        @apply --paper-font-common-base;
+      }
+
+      body {
+        margin: 25px;
+        background: var(--paper-grey-100);
+      }
+    </style>
+  </custom-style>
+
+  <p>iframe events parent</p>
+  <demo-element></demo-element>
+</body>
 
 <dom-module id="demo-element">
 
@@ -13,7 +39,7 @@
     </style>
 
     <p>iframe parent element</p>
-    <iframe id="iframe" src="./iframe-child.html"></iframe>
+    <iframe id="iframe" src="[[src]]"></iframe>
   </template>
 
   <script>
@@ -27,14 +53,22 @@
 
         static get properties() {
           return {
+            src: {
+              type: String,
+              value: () => "./iframe-events-child.html"
+            }
           }
         }
 
         ready() {
           super.ready()
-          const iframe = this.$.iframe
 
+          this._communicateWithChild()
+        }
+
+        _communicateWithChild() {
           setTimeout(() => {
+            const iframe = this.$.iframe
             const target = window.document
             // const target = iframe.contentWindow.document
 
@@ -59,7 +93,3 @@
   </script>
 
 </dom-module>
-
-<body>
-  <demo-element></demo-element>
-</body>
