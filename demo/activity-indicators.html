@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>demo</title>
+
+<script src="../bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/lib/elements/custom-style.html">
+<link rel="import" href="../bower_components/polymer/lib/utils/unresolved.html">
+<link rel="import" href="../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../bower_components/paper-styles/paper-styles-classes.html">
+
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner-lite.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+
+<body unresolved>
+  <custom-style>
+    <style>
+      html {
+        @apply --paper-font-common-base;
+        @apply --paper-font-common-expensive-kerning;
+      }
+
+      body {
+        margin: 25px;
+        background: var(--paper-grey-100);
+      }
+    </style>
+  </custom-style>
+
+  <p>activity indicators</p>
+  <demo-element></demo-element>
+</body>
+
+<dom-module id="demo-element">
+
+  <template>
+    <style include="iron-flex iron-flex-alignment"></style>
+
+    <style>
+      :host {
+        display: block;
+        @apply --layout-fixed-top;
+      }
+
+      paper-progress.init {
+        display: block;
+        width: 100%;
+        margin: 20px 0;
+      }
+
+      paper-progress.slow {
+        --paper-progress-indeterminate-cycle-duration: 5s;
+      }
+
+      paper-progress.blue {
+        --paper-progress-active-color: var(--paper-light-blue-500);
+        --paper-progress-secondary-color: var(--paper-light-blue-100);
+        --paper-progress-container-color: var(--paper-light-blue-100);
+      }
+
+      paper-progress.red {
+        --paper-progress-active-color: var(--paper-red-500);
+        --paper-progress-secondary-color: var(--paper-red-100);
+      }
+
+      paper-spinner-lite.blue {
+        --paper-spinner-color: var(--paper-light-blue-500);
+        --paper-spinner-stroke-width: 4px;
+      }
+
+      app-drawer {
+        --app-drawer-scrim-background: rgba(0, 0, 100, 0.8);
+        --app-drawer-content-container: {
+          background-color: #B0BEC5;
+        };
+      }
+
+      app-toolbar {
+        background-color: #4285f4;
+        color: #fff;
+      }
+
+      paper-icon-button {
+        --paper-icon-button-ink-color: white;
+      }
+
+      paper-icon-button+[main-title] {
+        margin-left: 24px;
+      }
+
+      paper-progress.header {
+        display: block;
+        width: 100%;
+        --paper-progress-active-color: rgba(255, 255, 255, 0.5);
+        --paper-progress-container-color: transparent;
+      }
+
+      app-header {
+        /* @apply --layout-fixed-top; */
+        color: #fff;
+        --app-header-background-rear-layer: {
+          background-color: #ef6c00;
+        };
+      }
+
+      app-drawer {
+        --app-drawer-scrim-background: rgba(0, 0, 100, 0.8);
+        --app-drawer-content-container: {
+          background-color: #b0bec5;
+        };
+      }
+
+      paper-toolbar.red {
+        margin: -12px -16px -6px;
+        /* color: rgba(255, 255, 255, 0.5); */
+        color: gray;
+        --paper-toolbar-background: transparent;
+        --paper-toolbar-title: {
+          /* font-weight: bold; */
+        };
+        --paper-toolbar-height: 56px;
+      }
+
+      paper-toolbar .title {
+        @apply --paper-font-subhead;
+        margin-left: 5px;
+      }
+    </style>
+
+    <div class="layout horizontal">
+      <app-header shadow class="flex" style="z-index: 1;">
+        <app-toolbar>
+          <div main-title>My app</div>
+          <paper-icon-button icon="menu" on-tap="onMenuClicked"></paper-icon-button>
+          <paper-progress value="10" indeterminate bottom-item class="header fit"></paper-progress>
+        </app-toolbar>
+      </app-header>
+    </div>
+
+    <style>
+      /* https://material.angular.io/components/sidenav/overview */
+
+      .side-nav {
+        z-index: 0;
+        right: 0;
+        position: absolute;
+        width: 380px;
+        height: 100%;
+        background-color: #ffffff;
+        transform: translate3d(100%, 0, 0);
+        transition: all 0.5s;
+        /* -webkit-transform: translate3d(100%, 0, 0); */
+        /* -webkit-transition: -webkit-transform 0.5s; */
+      }
+
+      .fixed {
+        position: inherit;
+        transform: translate3d(0, 0, 0);
+        transition: transform 0.5s;
+        /* -webkit-transform: translate3d(0, 0, 0); */
+        /* -webkit-transition: -webkit-transform 0.5s; */
+      }
+
+      .container {
+        overflow: hidden;
+      }
+
+      .content {
+        padding: 16px;
+      }
+
+      .content-row {
+        margin: 40px 0;
+      }
+
+      paper-tabs {
+        margin: 0 -16px;
+        --paper-tabs-selection-bar-color: var(--paper-light-blue-500);
+        border-bottom: 1px solid var(--divider-color, #000);
+      }
+
+      paper-tab {
+        --paper-tab-ink: var(--paper-light-blue-500);
+      }
+    </style>
+
+    <div class="layout horizontal container" style="position: relative; height: 1000px">
+      <div class="flex content">
+
+        <div class="content-row layout horizontal center-justified">
+          <div style="display: inline-block;">
+            <p>loading main content</p>
+            <paper-progress indeterminate class="slow blue init"></paper-progress>
+          </div>
+        </div>
+
+        <p>main content</p>
+
+      </div>
+      <paper-card id="sidebar" elevation="2" class="side-nav fixed content">
+
+        <paper-toolbar class="red">
+          <paper-icon-button slot="top" icon="folder"></paper-icon-button>
+          <span slot="top" class="title">Lorem ipsum dolor</span>
+          <paper-icon-button slot="top" icon="delete"></paper-icon-button>
+        </paper-toolbar>
+
+        <paper-tabs selected="0" -scrollable fit-container>
+          <paper-tab>TAB 1</paper-tab>
+          <paper-tab>TAB 2</paper-tab>
+          <paper-tab>TAB 3</paper-tab>
+          <paper-tab>TAB 4</paper-tab>
+          <!-- <paper-tab>TAB 5</paper-tab>
+          <paper-tab>TAB 6</paper-tab>
+          <paper-tab>TAB 7</paper-tab>
+          <paper-tab>TAB 8</paper-tab> -->
+        </paper-tabs>
+
+        <div class="content-row layout horizontal center-justified">
+          <div>
+            <paper-spinner-lite active class="blue"></paper-spinner-lite>
+          </div>
+        </div>
+
+        <p>drawer content</p>
+
+      </paper-card>
+    </div>
+
+    <!-- <div>
+      <div style="position: relative; height: 100px; width: 100px">
+        <app-drawer-layout narrow opened-when-narrow fullbleed>
+          <app-drawer persistent slot="drawer" align="end">
+            <div style="height: 100%; overflow: auto;">
+              drawer content
+            </div>
+          </app-drawer>
+
+          <div>
+            main content
+          </div>
+        </app-drawer-layout>
+      </div>
+    </div> -->
+
+    <paper-toast text="Resource is missing." opened duration="1500" horizontal-align="center" vertical-offset="0"></paper-toast>
+  </template>
+
+  <script>
+    window.addEventListener("WebComponentsReady", () => {
+
+      class DemoElement extends Polymer.Element {
+
+        static get is() {
+          return "demo-element"
+        }
+
+        static get properties() {
+          return {
+          }
+        }
+
+        onMenuClicked(event) {
+          console.log(event)
+          this.$.sidebar.classList.toggle("fixed")
+        }
+
+      }
+
+      window.customElements.define(DemoElement.is, DemoElement)
+
+    })
+  </script>
+
+</dom-module>

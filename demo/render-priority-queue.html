@@ -80,7 +80,7 @@
       Polymer.RenderStatus.beforeNextRender(context, () => {
         console.log(Math.round(window.performance.now()), "before next render")
         const batch = TemplateQueue.newBatch()
-        const q = d3.queue()
+        const q = d3.queue({ concurrency: 1 })
         batch.tasks.forEach(task => {
           TemplateQueue.dequeue(task)
           q.defer(task.run)
@@ -173,7 +173,10 @@
           const task = {
             run: done => {
               setTimeout(() => {
+                const start = window.performance.now()
                 this._changeContainerVisible()
+                const duration = window.performance.now() - start
+                console.log(duration)
                 done(null)
               }, this.delay)
             },
